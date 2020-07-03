@@ -1,2 +1,2 @@
 # seagrass-fish-inverts
-This repository contains code for create the Nearshore seagrass fish and invertebrate data package
+This repository contains code for creating the Nearshore seagrass fish and invertebrate data package
