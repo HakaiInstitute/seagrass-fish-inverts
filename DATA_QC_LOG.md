@@ -8,3 +8,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - This is a first attempt at keeping a data QC log in this format. 
 
 ### Tasks ###
+- *consider adding column to data spreadsheet to keep track of who quality checked what (suggested in Hakai Nearshore Data Standards and Best Practices guideslines). 
