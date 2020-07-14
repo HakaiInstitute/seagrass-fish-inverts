@@ -24,9 +24,9 @@ library(magrittr)
 library(lubridate)
 
 # load data
-fish <- read.csv("raw-data/seagrass-fish.csv")
-inverts <- read.csv("raw-data/seagrass-inverts.csv")
-events <- read.csv("raw-data/seagrass-events.csv")
+fish <- read.csv("../raw-data/seagrass_fish.csv")
+inverts <- read.csv("../raw-data/seagrass_inverts.csv")
+events <- read.csv("../raw-data/seagrass_events.csv")
 ```
 
 ### Data Quality Check - Cross Reference Events
