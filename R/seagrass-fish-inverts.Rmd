@@ -99,8 +99,10 @@ fish_events_to_QC <-
                            n_fish_surveys > 2 ~ "too many surveys")) %>%
   ## 2015 data not in the data portal currently
   filter(year(date) != 2015)
+```
 
-# save issues to .csv
-write.csv(fish_events_to_QC, "fishues_all_years.csv")
+Save `fish_events_to_QC` to .csv:
+```{r}
+write.csv(fish_events_to_QC, "../raw-data/fish_events_to_QC.csv")
 ```
 
