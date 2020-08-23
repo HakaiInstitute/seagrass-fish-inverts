@@ -37,7 +37,8 @@ all data is present, the fish and invertebrate events should match the Events
 table.
 
 For each event (ie. transect - site_id - level visit), there should be two
-fish surveys, and two invertebrate surveys
+fish surveys, and two invertebrate surveys. 
+
 ```{r event-qc}
 # aggregate fish to event level
 fish_events <-
@@ -55,7 +56,7 @@ inverts_events <-
   summarise(n_species_obs = n()) %>%
   ungroup() %>%
   group_by(date, survey, site_id) %>%
-  summarise(n_invert_surveys = n())
+  summarise(n_inverts_surveys = n())
 
 # clean and aggregate events
 events_count <-
@@ -63,8 +64,7 @@ events_count <-
   group_by(date, survey, site_id) %>%
   summarise(n_events = n())  # 
 
-# join fish events with events; there should be two fish surveys for each
-#   event
+# join fish events with events; there should be two fish surveys for each event
 fish_events_check <-
   right_join(fish_events, events_count) %>%
    # remove typo Koeye events still stuck in data portal
@@ -72,6 +72,13 @@ fish_events_check <-
          !grepl("KOEYE_ESTUARY ESTUARY", survey),
          !grepl("^KOEYE_KOEYE.*", site_id))
 
+# join invert events with events; there should be two invert surveys for each event
+inverts_events_check <-
+  right_join(inverts_events, events_count) %>%
+   # remove typo Koeye events still stuck in data portal
+  filter(!grepl("KOEYE_ESTUARY_ESTUARY", survey),
+         !grepl("KOEYE_ESTUARY ESTUARY", survey),
+         !grepl("^KOEYE_KOEYE.*", site_id))
 
 # subset out events without the appropriate number of fish surveys
 ## all data missing (both surveys)
@@ -97,12 +104,39 @@ fish_events_to_QC <-
   mutate(issue = case_when(is.na(n_fish_surveys) ~ "both surveys missing",
                            n_fish_surveys == 1 ~ "one survey missing",
                            n_fish_surveys > 2 ~ "too many surveys")) %>%
-  ## 2015 data not in the data portal currently
+## 2015 data not in the data portal currently
   filter(year(date) != 2015)
-```
 
-Save `fish_events_to_QC` to .csv:
-```{r}
+## save `fish_events_to_QC` to .csv:
 write.csv(fish_events_to_QC, "../raw-data/fish_events_to_QC.csv")
-```
 
+# subset out events without the appropriate number of invert surveys
+## all data missing (both surveys)
+inverts_2surveys_missing <-
+  inverts_events_check %>%
+  filter(is.na(n_inverts_surveys))
+
+## one survey missing
+inverts_1survey_missing <-
+  inverts_events_check %>%
+  filter(n_inverts_surveys == 1)
+
+## too many surveys; possibly entered twice, or mislabeled
+inverts_too_many_surveys <-
+  inverts_events_check %>%
+  filter(n_inverts_surveys > 2)
+
+## join all invert events needing QC
+inverts_events_to_QC <-
+  rbind(inverts_2surveys_missing,
+        inverts_1survey_missing,
+        inverts_too_many_surveys) %>%
+  mutate(issue = case_when(is.na(n_inverts_surveys) ~ "both surveys missing",
+                           n_inverts_surveys == 1 ~ "one survey missing",
+                           n_inverts_surveys > 2 ~ "too many surveys")) %>%
+## 2015 data not in the data portal currently
+  filter(year(date) != 2015)
+
+## save `fish_events_to_QC` to .csv:
+write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
+```
