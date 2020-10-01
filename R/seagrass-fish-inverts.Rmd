@@ -30,13 +30,13 @@ events <- read.csv("../raw-data/seagrass_events.csv")
 ```
 
 ### Data Quality Check - Cross Reference Events
-In order to ensure completeness of the fish and invertebrate datasets (ie. all
+In order to ensure completeness of the fish and invertebrate datasets (i.e.. all
 site visits are included), the data will be aggregated to the event level, and
 then cross reference with the events data also loaded from the EIMS Portal. If
 all data is present, the fish and invertebrate events should match the Events
 table.
 
-For each event (ie. transect - site_id - level visit), there should be two
+For each event (i.e.. transect - site_id - level visit), there should be two
 fish surveys, and two invertebrate surveys. 
 
 ```{r event-qc}
@@ -91,7 +91,7 @@ fish_1survey_missing <-
   fish_events_check %>%
   filter(n_fish_surveys == 1)
 
-## too many surveys; possibly entered twice, or mislabelled
+## too many surveys; possibly entered twice, or mislabeled
 fish_too_many_surveys <-
   fish_events_check %>%
   filter(n_fish_surveys > 2)
@@ -105,7 +105,14 @@ fish_events_to_QC <-
                            n_fish_surveys == 1 ~ "one survey missing",
                            n_fish_surveys > 2 ~ "too many surveys")) %>%
 ## 2015 data not in the data portal currently
-  filter(year(date) != 2015)
+  filter(year(date) != 2015) %>%
+  
+## For 2018 onward, no fish and invert surveys conducted for Goose SE, McMullin, and Triquet
+  filter(!(year(date) >= 2018 & survey == "GOOSE_SOUTHEAST"), 
+           !(year(date) >= 2018 & survey == "MCMULLIN_NORTH"), 
+             !(year(date) >= 2018 & survey == "MCMULLIN_SOUTH"), 
+               !(year(date) >= 2018 & survey =="TRIQUET_NORTH"), 
+                 !(year(date) >= 2018 & survey =="TRIQUET_BAY"))
 
 ## save `fish_events_to_QC` to .csv:
 write.csv(fish_events_to_QC, "../raw-data/fish_events_to_QC.csv")
@@ -134,8 +141,16 @@ inverts_events_to_QC <-
   mutate(issue = case_when(is.na(n_inverts_surveys) ~ "both surveys missing",
                            n_inverts_surveys == 1 ~ "one survey missing",
                            n_inverts_surveys > 2 ~ "too many surveys")) %>%
+  
 ## 2015 data not in the data portal currently
-  filter(year(date) != 2015)
+  filter(year(date) != 2015) %>%
+
+## For 2018 onward, no fish and invert surveys conducted for Goose SE, McMullin, and Triquet
+  filter(!(year(date) >= 2018 & survey == "GOOSE_SOUTHEAST"), 
+           !(year(date) >= 2018 & survey == "MCMULLIN_NORTH"), 
+             !(year(date) >= 2018 & survey == "MCMULLIN_SOUTH"), 
+               !(year(date) >= 2018 & survey =="TRIQUET_NORTH"), 
+                 !(year(date) >= 2018 & survey =="TRIQUET_BAY"))
 
 ## save `fish_events_to_QC` to .csv:
 write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
