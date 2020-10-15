@@ -5,13 +5,13 @@ date: '2020-07-10'
 output: html_document
 ---
 
-## Seagrass Fish and Inverts Data Package
-### Purpose
+# Seagrass Fish and Inverts Data Package
+## Purpose
 This script serves to collect, aggregate, and QC fish and macroinvertebrate
 survey data from the Hakai Nearshore Seagrass project.
 
 
-### Setup - packages
+## Setup - packages
 This script will use multiple data packages, and source scripts. If you do not
 already have the necessary data packages installed, please install them at this
 point using `install.packages("PACKAGE_NAME")` in the console window.
@@ -29,11 +29,13 @@ inverts <- read.csv("../raw-data/seagrass_inverts.csv")
 events <- read.csv("../raw-data/seagrass_events.csv")
 ```
 
-### Data Quality Check - Cross Reference Events
-In order to ensure completeness of the fish and invertebrate datasets (i.e.. all
+## Data Quality Check
+
+###Cross Reference Events
+In order to ensure completeness of the fish and invertebrate datasets (i.e. all
 site visits are included), the data will be aggregated to the event level, and
-then cross reference with the events data also loaded from the EIMS Portal. If
-all data is present, the fish and invertebrate events should match the Events
+then cross referenced with the events data also loaded from the EIMS Portal. If
+all data are present, the fish and invertebrate events should match the Events
 table.
 
 For each event (i.e.. transect - site_id - level visit), there should be two
@@ -154,4 +156,28 @@ inverts_events_to_QC <-
 
 ## save `fish_events_to_QC` to .csv:
 write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
+```
+
+
+### Checking for suspicious values
+
+Check fish lengths and abundances for suspicious values, using Q-Q plots to look at data values vs. quantiles:
+```{r}
+#create qqplot
+fishlengths_qqplot <- fish %>%
+  ggplot(aes(col = species)) + 
+  stat_qq(aes(sample = length_cm)) + 
+  stat_qq_line(aes(sample = length_cm)) + 
+  facet_wrap( ~ species) + 
+  theme_classic() + 
+  theme(legend.position = "none")
+
+#take a closer look at qqplots that look a little fishy (hah)
+#code to pull up smaller subset of qqplots 
+
+#filter out suspicious-looking lengths
+# fishQC_length_cm <- fish %>%
+#   filter(species == "sole/english" & length_cm > 25 |
+#            species == "gunnel/crescent" & length_cm < 25)
+
 ```
