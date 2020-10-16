@@ -167,18 +167,64 @@ Fix names so there aren't multiple names for single species
 fishnames_accepted <- read.csv("../raw-data/fish_names_list.csv", header = FALSE)
 colnames(fishnames_accepted) <- "name"
 
-# create list of fish names in data
+# create list of fish names in data, and filter out ones that differ from list of acceptable names
 fishnames_data <- unique(fish$species) %>% sort %>% data.frame
 colnames(fishnames_data) <- "name"
-
-# filter out names in data that differ from acceptable naming convention
-anti_join(fishnames_data, fishnames_accepted)
+fishnames_tofix <- anti_join(fishnames_data, fishnames_accepted)
+fishnames_tofix <- filter(fishnames_tofix, name != "no_obs")
 
 # fix names that don't match acceptable naming convention
-fishnames_data$name[c(1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 15, 17, 26, 27, 28, 29, 34, 36, 37, 38, 48, 49, 59, 60, 61, 62, 64, 65, 66, 67, 68, 69, 73, 74, 75, 76, 77, 78)] <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "sole/c-o", "flatfish/soledab", "goby/bay", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted")
+# this works but it is so very ugly - fix later (use replace? create dictionary?)
+fish$species[fish$species == "arrow tooth flounder"] <- "flounder/arrow_tooth"
+fish$species[fish$species == "bay goby"] <- "goby/bay"
+fish$species[fish$species == "bay_pipefish"] <- "pipefish/bay"
+fish$species[fish$species == "big skate"] <- "skate/big"
+fish$species[fish$species == "c-o sole"] <- "sole/c-o"
+fish$species[fish$species == "deacon rockfish"] <- "rockfish/deacon"
+fish$species[fish$species == "english sole"] <- "sole/english"
+fish$species[fish$species == "enso"] <- "sole/english"
+fish$species[fish$species == "flounder/c-o"] <- "sole/c-o"
+fish$species[fish$species == "flounder/sole_dab"] <- "flatfish/soledab"
+fish$species[fish$species == "goby, bay"] <- "goby/bay"
+fish$species[fish$species == "greenling white spotted"] <- "greenling/white-spotted"
+fish$species[fish$species == "pacific sand dab"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "pacific sanddab"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "painted greenling"] <- "greenling/painted"
+fish$species[fish$species == "pasa"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "prickleback, snake"] <- "prickleback/snake"
+fish$species[fish$species == "rock sole"] <- "sole/rock"
+fish$species[fish$species == "rockfish decan"] <- "rockfish/deacon"
+fish$species[fish$species == "rockfish declan"] <- "rockfish/deacon"
+fish$species[fish$species == "sand sole"] <- "sole/sand"
+fish$species[fish$species == "sanddab, pacific"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "skate"] <- "skate/unknown"
+fish$species[fish$species == "sole"] <- "sole/unknown"
+fish$species[fish$species == "sole, english"] <- "sole/english"
+fish$species[fish$species == "sole, unknown"] <- "sole/unknown"
+fish$species[fish$species == "soledad"] <- "flatfish/soledab"
+fish$species[fish$species == "stickleback"] <- "threespine_stickleback"
+fish$species[fish$species == "stickleback, threespine"] <- "threespine_stickleback"
+fish$species[fish$species == "three spine stickleback (thst)"] <- "threespine_stickleback"
+fish$species[fish$species == "threespine stickleback"] <- "threespine_stickleback"
+fish$species[fish$species == "threespine stickleback010"] <- "threespine_stickleback"
+fish$species[fish$species == "unknown cod"] <- "cod/unknown"
+fish$species[fish$species == "unknown flat"] <- "flatfish/unknown"
+fish$species[fish$species == "unknown flatfish"] <- "flatfish/unknown"
+fish$species[fish$species == "vermillion rockfish"] <- "rockfish/vermillion"
+fish$species[fish$species == "white-spotted greenling"] <- "greenling/white-spotted"
+fish$species[fish$species == "white spotted greenling"] <- "greenling/white-spotted"
 
 # check that all names match ones in acceptable names list now
+fishnames_data <- unique(fish$species) %>% sort %>% data.frame
+colnames(fishnames_data) <- "name"
 anti_join(fishnames_data, fishnames_accepted)
+
+
+# working on better solution for this^
+
+# # create list of accceptable fish names to replace ones that need fixing
+# fishnames_replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "sole/c-o", "flatfish/soledab", "goby/bay", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted") %>% data.frame
+# colnames(fishnames_replace) <- "name"
 
 ```
 
@@ -193,10 +239,18 @@ fishlengths_qqplot <- fish %>%
   theme_classic() + 
   theme(legend.position = "none")
 
-#take a closer look at qqplots that look a little fishy (hah)
-#code to pull up smaller subset of qqplots 
+# what are these 8 extra qqplots with no species headers?
+```
 
-#filter out suspicious-looking lengths
+Looks like there's some fishy-looking fish lengths so let's do some flagging
+```{r}
+#figure out sd
+fishlength_stats <- fish %>% 
+  group_by(species) %>% 
+  summarise(mean = mean(length_cm, na.rm = T), 
+            sd = sd(length_cm, na.rm = T))
+
+#filter out suspicious-looking lengths and flag (>2.5x sd = SVD, >2x sd = SVC)
 # fishQC_length_cm <- fish %>%
 #   filter(species == "sole/english" & length_cm > 25 |
 #            species == "gunnel/crescent" & length_cm < 25)
