@@ -161,6 +161,27 @@ write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
 
 ### Checking for suspicious values
 
+Fix names so there aren't multiple names for single species
+```{r}
+# import list of acceptable fish names
+fishnames_accepted <- read.csv("../raw-data/fish_names_list.csv", header = FALSE)
+colnames(fishnames_accepted) <- "name"
+
+# create list of fish names in data
+fishnames_data <- unique(fish$species) %>% sort %>% data.frame
+colnames(fishnames_data) <- "name"
+
+# filter out names in data that differ from acceptable naming convention
+anti_join(fishnames_data, fishnames_accepted)
+
+# fix names that don't match acceptable naming convention
+fishnames_data$name[c(1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 15, 17, 26, 27, 28, 29, 34, 36, 37, 38, 48, 49, 59, 60, 61, 62, 64, 65, 66, 67, 68, 69, 73, 74, 75, 76, 77, 78)] <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "sole/c-o", "flatfish/soledab", "goby/bay", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted")
+
+# check that all names match ones in acceptable names list now
+anti_join(fishnames_data, fishnames_accepted)
+
+```
+
 Check fish lengths and abundances for suspicious values, using Q-Q plots to look at data values vs. quantiles:
 ```{r}
 #create qqplot
