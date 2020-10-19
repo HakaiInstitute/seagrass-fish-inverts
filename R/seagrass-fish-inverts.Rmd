@@ -161,7 +161,7 @@ write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
 
 ### Checking for suspicious values
 
-Fix names so there aren't multiple names for single species
+Fix species names so there aren't multiple names for single species
 ```{r}
 # import list of acceptable fish names
 fishnames_accepted <- read.csv("../raw-data/fish_names_list.csv", header = FALSE)
@@ -244,15 +244,16 @@ fishlengths_qqplot <- fish %>%
 
 Looks like there's some fishy-looking fish lengths so let's do some flagging
 ```{r}
-#figure out sd
-fishlength_stats <- fish %>% 
+#create working fish length data frame with just relevant data, including min, max, mean, and sd
+fishlengths <- fish %>%
+  filter(species != "no_obs") %>% 
+  select(X, species, length_cm) %>%
+  left_join(fish %>% 
   group_by(species) %>% 
-  summarise(mean = mean(length_cm, na.rm = T), 
-            sd = sd(length_cm, na.rm = T))
+  summarise(min = min(length_cm, na.rm = T),
+            max = max(length_cm, na.rm = T), 
+            mean = mean(length_cm, na.rm = T),
+            sd = sd(length_cm, na.rm = T)))
 
-#filter out suspicious-looking lengths and flag (>2.5x sd = SVD, >2x sd = SVC)
-# fishQC_length_cm <- fish %>%
-#   filter(species == "sole/english" & length_cm > 25 |
-#            species == "gunnel/crescent" & length_cm < 25)
-
+fishlengths$qc_flag <- ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlengths$sd), "SVD", ifelse(fishlengths$max >= (fishlengths$mean + 2*fishlengths$sd), "SVC", "AV"))
 ```
