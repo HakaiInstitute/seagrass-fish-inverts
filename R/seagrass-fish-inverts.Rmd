@@ -255,5 +255,10 @@ fishlengths <- fish %>%
             mean = mean(length_cm, na.rm = T),
             sd = sd(length_cm, na.rm = T)))
 
-fishlengths$qc_flag <- ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlengths$sd), "SVD", ifelse(fishlengths$max >= (fishlengths$mean + 2*fishlengths$sd), "SVC", "AV"))
+fishlengths$qc_flag <-  ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlengths$sd) |
+                                 fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
+                               "SVD", 
+                               ifelse(fishlengths$max >= (fishlengths$mean + 2*fishlengths$sd) |
+                                        fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
+                                      "SVC", "AV"))
 ```
