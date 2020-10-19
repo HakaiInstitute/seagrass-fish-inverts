@@ -1,6 +1,6 @@
 ---
 title: "Seagrass Fish and Inverts"
-author: "ZL Monteith"
+author: "ZL Monteith & F Manning"
 date: '2020-07-10'
 output: html_document
 ---
