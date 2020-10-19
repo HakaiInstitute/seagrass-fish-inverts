@@ -228,9 +228,9 @@ anti_join(fishnames_data, fishnames_accepted)
 
 ```
 
-Check fish lengths and abundances for suspicious values, using Q-Q plots to look at data values vs. quantiles:
+Check fish lengths for suspicious values, using Q-Q plots to look at data values vs. quantiles:
 ```{r}
-#create qqplot
+#create qqplot for lengths
 fishlengths_qqplot <- fish %>%
   ggplot(aes(col = species)) + 
   stat_qq(aes(sample = length_cm)) + 
@@ -255,10 +255,33 @@ fishlengths <- fish %>%
             mean = mean(length_cm, na.rm = T),
             sd = sd(length_cm, na.rm = T)))
 
-fishlengths$qc_flag <-  ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlengths$sd) |
+# add qc flags
+fishlengths$qc_flag <- ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlengths$sd) |
                                  fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
                                "SVD", 
                                ifelse(fishlengths$max >= (fishlengths$mean + 2*fishlengths$sd) |
                                         fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
                                       "SVC", "AV"))
+
+# merge QC flags back into OG fish data frame
+fish <- left_join(fish, (select(fishlengths, "X", "qc_flag")), on = "X")
 ```
+
+Check fish abundances for suspicious values:
+```{r}
+# note that for abundance, we'll want to group quantity by species and transect (unique combos of site_id, date, and collector) to look at average quantity per transect
+
+#create working fish abundance data frame with just relevant data, including min, max, mean, and sd
+# fishabunds <- fish %>%
+#   filter(species != "no_obs") %>% 
+#   select(X, site_id, date, collector, species, quantity) %>%
+#   left_join(fish %>% 
+#   group_by(species, site_id, date, collector) %>% 
+#   summarise(min = min(quantity, na.rm = T),
+#             max = max(quantity, na.rm = T), 
+#             mean = mean(quantity, na.rm = T),
+#             sd = sd(quantity, na.rm = T)))
+```
+
+Repeat for invertebrate lengths and abundances:
+
