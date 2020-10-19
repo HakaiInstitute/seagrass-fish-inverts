@@ -1,17 +1,17 @@
 ---
 title: "Seagrass Fish and Inverts"
-author: "ZL Monteith"
+author: "ZL Monteith & F Manning"
 date: '2020-07-10'
 output: html_document
 ---
 
-## Seagrass Fish and Inverts Data Package
-### Purpose
+# Seagrass Fish and Inverts Data Package
+## Purpose
 This script serves to collect, aggregate, and QC fish and macroinvertebrate
 survey data from the Hakai Nearshore Seagrass project.
 
 
-### Setup - packages
+## Setup - packages
 This script will use multiple data packages, and source scripts. If you do not
 already have the necessary data packages installed, please install them at this
 point using `install.packages("PACKAGE_NAME")` in the console window.
@@ -29,11 +29,13 @@ inverts <- read.csv("../raw-data/seagrass_inverts.csv")
 events <- read.csv("../raw-data/seagrass_events.csv")
 ```
 
-### Data Quality Check - Cross Reference Events
-In order to ensure completeness of the fish and invertebrate datasets (i.e.. all
+## Data Quality Check
+
+###Cross Reference Events
+In order to ensure completeness of the fish and invertebrate datasets (i.e. all
 site visits are included), the data will be aggregated to the event level, and
-then cross reference with the events data also loaded from the EIMS Portal. If
-all data is present, the fish and invertebrate events should match the Events
+then cross referenced with the events data also loaded from the EIMS Portal. If
+all data are present, the fish and invertebrate events should match the Events
 table.
 
 For each event (i.e.. transect - site_id - level visit), there should be two
@@ -154,4 +156,109 @@ inverts_events_to_QC <-
 
 ## save `fish_events_to_QC` to .csv:
 write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
+```
+
+
+### Checking for suspicious values
+
+Fix species names so there aren't multiple names for single species
+```{r}
+# import list of acceptable fish names
+fishnames_accepted <- read.csv("../raw-data/fish_names_list.csv", header = FALSE)
+colnames(fishnames_accepted) <- "name"
+
+# create list of fish names in data, and filter out ones that differ from list of acceptable names
+fishnames_data <- unique(fish$species) %>% sort %>% data.frame
+colnames(fishnames_data) <- "name"
+fishnames_tofix <- anti_join(fishnames_data, fishnames_accepted)
+fishnames_tofix <- filter(fishnames_tofix, name != "no_obs")
+
+# fix names that don't match acceptable naming convention
+# this works but it is so very ugly - fix later (use replace? create dictionary?)
+fish$species[fish$species == "arrow tooth flounder"] <- "flounder/arrow_tooth"
+fish$species[fish$species == "bay goby"] <- "goby/bay"
+fish$species[fish$species == "bay_pipefish"] <- "pipefish/bay"
+fish$species[fish$species == "big skate"] <- "skate/big"
+fish$species[fish$species == "c-o sole"] <- "sole/c-o"
+fish$species[fish$species == "deacon rockfish"] <- "rockfish/deacon"
+fish$species[fish$species == "english sole"] <- "sole/english"
+fish$species[fish$species == "enso"] <- "sole/english"
+fish$species[fish$species == "flounder/c-o"] <- "sole/c-o"
+fish$species[fish$species == "flounder/sole_dab"] <- "flatfish/soledab"
+fish$species[fish$species == "goby, bay"] <- "goby/bay"
+fish$species[fish$species == "greenling white spotted"] <- "greenling/white-spotted"
+fish$species[fish$species == "pacific sand dab"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "pacific sanddab"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "painted greenling"] <- "greenling/painted"
+fish$species[fish$species == "pasa"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "prickleback, snake"] <- "prickleback/snake"
+fish$species[fish$species == "rock sole"] <- "sole/rock"
+fish$species[fish$species == "rockfish decan"] <- "rockfish/deacon"
+fish$species[fish$species == "rockfish declan"] <- "rockfish/deacon"
+fish$species[fish$species == "sand sole"] <- "sole/sand"
+fish$species[fish$species == "sanddab, pacific"] <- "flounder/pacific_sanddab"
+fish$species[fish$species == "skate"] <- "skate/unknown"
+fish$species[fish$species == "sole"] <- "sole/unknown"
+fish$species[fish$species == "sole, english"] <- "sole/english"
+fish$species[fish$species == "sole, unknown"] <- "sole/unknown"
+fish$species[fish$species == "soledad"] <- "flatfish/soledab"
+fish$species[fish$species == "stickleback"] <- "threespine_stickleback"
+fish$species[fish$species == "stickleback, threespine"] <- "threespine_stickleback"
+fish$species[fish$species == "three spine stickleback (thst)"] <- "threespine_stickleback"
+fish$species[fish$species == "threespine stickleback"] <- "threespine_stickleback"
+fish$species[fish$species == "threespine stickleback010"] <- "threespine_stickleback"
+fish$species[fish$species == "unknown cod"] <- "cod/unknown"
+fish$species[fish$species == "unknown flat"] <- "flatfish/unknown"
+fish$species[fish$species == "unknown flatfish"] <- "flatfish/unknown"
+fish$species[fish$species == "vermillion rockfish"] <- "rockfish/vermillion"
+fish$species[fish$species == "white-spotted greenling"] <- "greenling/white-spotted"
+fish$species[fish$species == "white spotted greenling"] <- "greenling/white-spotted"
+
+# check that all names match ones in acceptable names list now
+fishnames_data <- unique(fish$species) %>% sort %>% data.frame
+colnames(fishnames_data) <- "name"
+anti_join(fishnames_data, fishnames_accepted)
+
+
+# working on better solution for this^
+
+# # create list of accceptable fish names to replace ones that need fixing
+# fishnames_replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "sole/c-o", "flatfish/soledab", "goby/bay", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted") %>% data.frame
+# colnames(fishnames_replace) <- "name"
+
+```
+
+Check fish lengths and abundances for suspicious values, using Q-Q plots to look at data values vs. quantiles:
+```{r}
+#create qqplot
+fishlengths_qqplot <- fish %>%
+  ggplot(aes(col = species)) + 
+  stat_qq(aes(sample = length_cm)) + 
+  stat_qq_line(aes(sample = length_cm)) + 
+  facet_wrap( ~ species) + 
+  theme_classic() + 
+  theme(legend.position = "none")
+
+# what are these 8 extra qqplots with no species headers?
+```
+
+Looks like there's some fishy-looking fish lengths so let's do some flagging
+```{r}
+#create working fish length data frame with just relevant data, including min, max, mean, and sd
+fishlengths <- fish %>%
+  filter(species != "no_obs") %>% 
+  select(X, species, length_cm) %>%
+  left_join(fish %>% 
+  group_by(species) %>% 
+  summarise(min = min(length_cm, na.rm = T),
+            max = max(length_cm, na.rm = T), 
+            mean = mean(length_cm, na.rm = T),
+            sd = sd(length_cm, na.rm = T)))
+
+fishlengths$qc_flag <-  ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlengths$sd) |
+                                 fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
+                               "SVD", 
+                               ifelse(fishlengths$max >= (fishlengths$mean + 2*fishlengths$sd) |
+                                        fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
+                                      "SVC", "AV"))
 ```
