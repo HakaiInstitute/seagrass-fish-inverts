@@ -179,13 +179,43 @@ fishnames_tofix$replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay",
 
 fish <- FindReplace(fish, "species", fishnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
-#FindReplace had trouble with replacing the one name containing parentheses, fix that here
+# FindReplace had trouble with replacing the one name containing parentheses, fix that here
 fish$species[fish$species == "three spine stickleback (thst)"] <- "threespine_stickleback"
+```
 
-# show that all names match ones in acceptable names list now
-fishnames_data <- unique(fish$species) %>% sort %>% data.frame
-colnames(fishnames_data) <- "name"
-anti_join(fishnames_data, fishnames_accepted)
+Repeat for inverts names
+```{r}
+# import list of acceptable inverts names
+invertsnames_accepted <- read.csv("../raw-data/inverts_names_list.csv", header = FALSE)
+colnames(invertsnames_accepted) <- "name"
+
+# create list of fish names in data that need fixing
+invertsnames_data <- unique(inverts$species) %>% sort %>% data.frame
+colnames(invertsnames_data) <- "name"
+invertsnames_tofix <- anti_join(invertsnames_data, invertsnames_accepted)
+invertsnames_tofix <- filter(invertsnames_tofix, name != "no_obs")
+
+# add corresponding acceptable fish names to replace ones that need fixing
+invertsnames_tofix$replace <- c("") 
+
+inverts <- FindReplace(inverts, "species", invertsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+```
+
+We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable since that comes up later
+```{r}
+# import list of acceptable collector names
+diversnames_accepted <- read.csv("../raw-data/divers_names_list.csv", header = FALSE)
+colnames(diversnames_accepted) <- "name"
+
+# create list of fish names in data that need fixing
+diversnames_data <- unique(fish$collector) %>% sort %>% data.frame
+colnames(diversnames_data) <- "name"
+diversnames_tofix <- anti_join(diversnames_data, diversnames_accepted)
+
+# add corresponding acceptable diver names to replace ones that need fixing
+diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach") 
+
+fish <- FindReplace(fish, "collector", diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 ```
 
 Check fish lengths for suspicious values, using Q-Q plots to look at data values vs. quantiles:
@@ -231,16 +261,18 @@ Check fish abundances for suspicious values:
 ```{r}
 # note that for abundance, we'll want to group quantity by species and transect (unique combos of site_id, date, and collector) to look at average quantity per transect
 
-#create working fish abundance data frame with just relevant data, including min, max, mean, and sd
-# fishabunds <- fish %>%
-#   filter(species != "no_obs") %>% 
-#   select(X, site_id, date, collector, species, quantity) %>%
-#   left_join(fish %>% 
-#   group_by(species, site_id, date, collector) %>% 
-#   summarise(min = min(quantity, na.rm = T),
-#             max = max(quantity, na.rm = T), 
-#             mean = mean(quantity, na.rm = T),
-#             sd = sd(quantity, na.rm = T)))
+# create new variable for transect, merging site_id, date, and collector together
+
+# create working fish abundance data frame with just relevant data, including min, max, mean, and sd
+fishabunds <- fish %>%
+  filter(species != "no_obs") %>%
+  select(X, site_id, date, collector, species, quantity) %>%
+  left_join(fish %>%
+  group_by(species, site_id, date, collector) %>%
+  summarise(min = min(quantity, na.rm = T),
+            max = max(quantity, na.rm = T),
+            mean = mean(quantity, na.rm = T),
+            sd = sd(quantity, na.rm = T)))
 ```
 
 Repeat for invertebrate lengths and abundances:
