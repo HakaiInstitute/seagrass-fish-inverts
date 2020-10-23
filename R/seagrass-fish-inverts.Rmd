@@ -196,27 +196,37 @@ invertsnames_tofix <- anti_join(invertsnames_data, invertsnames_accepted)
 invertsnames_tofix <- filter(invertsnames_tofix, name != "no_obs")
 
 # add corresponding acceptable fish names to replace ones that need fixing
-invertsnames_tofix$replace <- c("") 
+invertsnames_tofix$replace <- c("snail/pomaulax", "chiton/unknown", "chiton/unknown", "chiton/unknown", "siphon/cockle", "chiton/gumboot", "seacucumber/other", "nudibranch/dendronotus", "seastar/dermasterias", "snail/dire_whelk", "chiton/gumboot", "isopod/idotea", "seastar/leptasterias", "seastar/evasterias", "nudibranch/melibe", "crab/hermit", "crab/hermit", "seastar/pisaster_ochraceus", "snail/pomaulax", "snail/pomaulax", "snail/purple_olive", "clam/purple_velvet", "urchin/sand_dollar", "seacucumber/other", "seapen/orange", "worm/other", "nudibranch/other", "snail/dire_whelk", "seacucumber/other") 
 
 inverts <- FindReplace(inverts, "species", invertsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+
+# fix misspelling
+fish$species[fish$species == "melabie"] <- "melibe"
 ```
 
-We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable since that comes up later
+We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable in both the fish and inverts data frames since we'll be using those later
 ```{r}
 # import list of acceptable collector names
 diversnames_accepted <- read.csv("../raw-data/divers_names_list.csv", header = FALSE)
 colnames(diversnames_accepted) <- "name"
 
-# create list of fish names in data that need fixing
-diversnames_data <- unique(fish$collector) %>% sort %>% data.frame
-colnames(diversnames_data) <- "name"
-diversnames_tofix <- anti_join(diversnames_data, diversnames_accepted)
+# fix collector names in fish 
+fish_diversnames_data <- unique(fish$collector) %>% sort %>% data.frame
+colnames(fish_diversnames_data) <- "name"
+fish_diversnames_tofix <- anti_join(fish_diversnames_data, diversnames_accepted)
+fish_diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach") 
+fish <- FindReplace(fish, "collector", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
-# add corresponding acceptable diver names to replace ones that need fixing
-diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach") 
-
-fish <- FindReplace(fish, "collector", diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+#fix collector names in inverts
+inverts_diversnames_data <- unique(inverts$collector) %>% sort %>% data.frame
+colnames(inverts_diversnames_data) <- "name"
+inverts_diversnames_tofix <- anti_join(inverts_diversnames_data, diversnames_accepted)
+inverts_diversnames_tofix$replace <- c("kyle", "other") 
+inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 ```
+
+
+~code good to here~
 
 Check fish lengths for suspicious values, using Q-Q plots to look at data values vs. quantiles:
 ```{r}
@@ -233,6 +243,8 @@ fishlengths_qqplot <- fish %>%
 ```
 
 Looks like there's some fishy-looking fish lengths so let's do some flagging
+
+**Issue!! - means calculated here are inaccurate - based on just length_cm variable - assumes only one individual per length
 ```{r}
 #create working fish length data frame with just relevant data, including min, max, mean, and sd
 fishlengths <- fish %>%
@@ -262,13 +274,14 @@ Check fish abundances for suspicious values:
 # note that for abundance, we'll want to group quantity by species and transect (unique combos of site_id, date, and collector) to look at average quantity per transect
 
 # create new variable for transect, merging site_id, date, and collector together
+fish$transect <- paste(fish$site_id, fish$date, fish$collector, sep = "_")
 
 # create working fish abundance data frame with just relevant data, including min, max, mean, and sd
 fishabunds <- fish %>%
   filter(species != "no_obs") %>%
-  select(X, site_id, date, collector, species, quantity) %>%
+  select(X, transect, species, quantity) %>%
   left_join(fish %>%
-  group_by(species, site_id, date, collector) %>%
+  group_by(transect, species) %>%
   summarise(min = min(quantity, na.rm = T),
             max = max(quantity, na.rm = T),
             mean = mean(quantity, na.rm = T),
