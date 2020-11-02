@@ -160,7 +160,7 @@ write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
 ```
 
 
-### Checking for suspicious values
+### Fixing names
 
 Fix species names so there aren't multiple names for single species
 ```{r}
@@ -179,18 +179,65 @@ fishnames_tofix$replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay",
 
 fish <- FindReplace(fish, "species", fishnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
-#FindReplace had trouble with replacing the one name containing parentheses, fix that here
+# FindReplace had trouble with replacing the one name containing parentheses, fix that here
 fish$species[fish$species == "three spine stickleback (thst)"] <- "threespine_stickleback"
-
-# show that all names match ones in acceptable names list now
-fishnames_data <- unique(fish$species) %>% sort %>% data.frame
-colnames(fishnames_data) <- "name"
-anti_join(fishnames_data, fishnames_accepted)
 ```
+
+Repeat for inverts names
+```{r}
+# import list of acceptable inverts names
+invertsnames_accepted <- read.csv("../raw-data/inverts_names_list.csv", header = FALSE)
+colnames(invertsnames_accepted) <- "name"
+
+# create list of fish names in data that need fixing
+invertsnames_data <- unique(inverts$species) %>% sort %>% data.frame
+colnames(invertsnames_data) <- "name"
+invertsnames_tofix <- anti_join(invertsnames_data, invertsnames_accepted)
+invertsnames_tofix <- filter(invertsnames_tofix, name != "no_obs")
+
+# add corresponding acceptable fish names to replace ones that need fixing
+invertsnames_tofix$replace <- c("snail/pomaulax", "chiton/unknown", "chiton/unknown", "chiton/unknown", "siphon/cockle", "chiton/gumboot", "seacucumber/other", "nudibranch/dendronotus", "seastar/dermasterias", "snail/dire_whelk", "chiton/gumboot", "isopod/idotea", "seastar/leptasterias", "seastar/evasterias", "nudibranch/melibe", "crab/hermit", "crab/hermit", "seastar/pisaster_ochraceus", "snail/pomaulax", "snail/pomaulax", "snail/purple_olive", "clam/purple_velvet", "urchin/sand_dollar", "seacucumber/other", "seapen/orange", "worm/other", "nudibranch/other", "snail/dire_whelk", "seacucumber/other") 
+
+inverts <- FindReplace(inverts, "species", invertsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+
+# fix misspelling
+fish$species[fish$species == "melabie"] <- "melibe"
+```
+
+We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable in both the fish and inverts data frames since we'll be using those later
+```{r}
+# import list of acceptable collector names
+diversnames_accepted <- read.csv("../raw-data/divers_names_list.csv", header = FALSE)
+colnames(diversnames_accepted) <- "name"
+
+# fix collector names in fish 
+fish_diversnames_data <- unique(fish$collector) %>% sort %>% data.frame
+colnames(fish_diversnames_data) <- "name"
+fish_diversnames_tofix <- anti_join(fish_diversnames_data, diversnames_accepted)
+fish_diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach") 
+fish <- FindReplace(fish, "collector", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+
+# fix collector names in inverts
+inverts_diversnames_data <- unique(inverts$collector) %>% sort %>% data.frame
+colnames(inverts_diversnames_data) <- "name"
+inverts_diversnames_tofix <- anti_join(inverts_diversnames_data, diversnames_accepted)
+inverts_diversnames_tofix$replace <- c("kyle", "other") 
+inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+```
+
+
+### Checking for suspicious values
+
+<!-- First, create version of fish data frame where multiple observations aren't grouped into single rows  -->
+<!-- ```{r} -->
+<!-- fish_allrows <- fish %>% -->
+<!--   filter(!is.na(quantity)) %>% -->
+<!--   uncount(quantity) -->
+<!-- ``` -->
 
 Check fish lengths for suspicious values, using Q-Q plots to look at data values vs. quantiles:
 ```{r}
-#create qqplot for lengths
+# create qqplot for lengths
 fishlengths_qqplot <- fish %>%
   ggplot(aes(col = species)) + 
   stat_qq(aes(sample = length_cm)) + 
@@ -198,49 +245,59 @@ fishlengths_qqplot <- fish %>%
   facet_wrap( ~ species) + 
   theme_classic() + 
   theme(legend.position = "none")
-
-# what are these 8 extra qqplots with no species headers?
+fishlengths_qqplot
 ```
 
-Looks like there's some fishy-looking fish lengths so let's do some flagging
+
+
+Looks like there might some fishy-looking fish lengths so let's do some flagging
 ```{r}
-#create working fish length data frame with just relevant data, including min, max, mean, and sd
+# create working fish length data frame with just relevant data, including min, max, mean, and sd
 fishlengths <- fish %>%
-  filter(species != "no_obs") %>% 
+  filter(!is.na(quantity)) %>%
+  uncount(quantity) %>%
   select(X, species, length_cm) %>%
   left_join(fish %>% 
   group_by(species) %>% 
-  summarise(min = min(length_cm, na.rm = T),
-            max = max(length_cm, na.rm = T), 
-            mean = mean(length_cm, na.rm = T),
-            sd = sd(length_cm, na.rm = T)))
+  summarise(mean = mean(length_cm, na.rm = T),
+            sd = sd(length_cm, na.rm = T))) %>%
+  unique()
 
 # add qc flags
-fishlengths$qc_flag <- ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlengths$sd) |
-                                 fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
-                               "SVD", 
-                               ifelse(fishlengths$max >= (fishlengths$mean + 2*fishlengths$sd) |
-                                        fishlengths$min <= -(fishlengths$mean + 2.5*fishlengths$sd),
-                                      "SVC", "AV"))
+fishlengths$upper99 <- fishlengths$mean + 2.5*fishlengths$sd
+fishlengths$lower99 <- fishlengths$mean - 2.5*fishlengths$sd
+fishlengths$upper95 <- fishlengths$mean + 2*fishlengths$sd
+fishlengths$lower95 <- fishlengths$mean - 2*fishlengths$sd
+
+fishlengths$qc_flag <- ifelse(between(fishlengths$length_cm, fishlengths$upper95, fishlengths$lower95), "SVC",
+                              ifelse(between(fishlengths$length_cm, fishlengths$upper99, fishlengths$lower99), "SVD", "AV"))
 
 # merge QC flags back into OG fish data frame
 fish <- left_join(fish, (select(fishlengths, "X", "qc_flag")), on = "X")
 ```
 
+^ apparently all the values are acceptable? check this
+
+
+~code good to here~
+
 Check fish abundances for suspicious values:
 ```{r}
 # note that for abundance, we'll want to group quantity by species and transect (unique combos of site_id, date, and collector) to look at average quantity per transect
 
-#create working fish abundance data frame with just relevant data, including min, max, mean, and sd
-# fishabunds <- fish %>%
-#   filter(species != "no_obs") %>% 
-#   select(X, site_id, date, collector, species, quantity) %>%
-#   left_join(fish %>% 
-#   group_by(species, site_id, date, collector) %>% 
-#   summarise(min = min(quantity, na.rm = T),
-#             max = max(quantity, na.rm = T), 
-#             mean = mean(quantity, na.rm = T),
-#             sd = sd(quantity, na.rm = T)))
+# create new variable for transect, merging site_id, date, and collector together
+fish$transect <- paste(fish$site_id, fish$date, fish$collector, sep = "_")
+
+# create working fish abundance data frame with just relevant data, including min, max, mean, and sd
+fishabunds <- fish %>%
+  filter(species != "no_obs") %>%
+  select(X, transect, species, quantity) %>%
+  left_join(fish %>%
+  group_by(transect, species) %>%
+  summarise(min = min(quantity, na.rm = T),
+            max = max(quantity, na.rm = T),
+            mean = mean(quantity, na.rm = T),
+            sd = sd(quantity, na.rm = T)))
 ```
 
 Repeat for invertebrate lengths and abundances:
