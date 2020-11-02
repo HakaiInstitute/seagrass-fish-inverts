@@ -160,7 +160,7 @@ write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
 ```
 
 
-### Checking for suspicious values
+### Fixing names
 
 Fix species names so there aren't multiple names for single species
 ```{r}
@@ -217,7 +217,7 @@ fish_diversnames_tofix <- anti_join(fish_diversnames_data, diversnames_accepted)
 fish_diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach") 
 fish <- FindReplace(fish, "collector", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
-#fix collector names in inverts
+# fix collector names in inverts
 inverts_diversnames_data <- unique(inverts$collector) %>% sort %>% data.frame
 colnames(inverts_diversnames_data) <- "name"
 inverts_diversnames_tofix <- anti_join(inverts_diversnames_data, diversnames_accepted)
@@ -226,11 +226,18 @@ inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "
 ```
 
 
-~code good to here~
+### Checking for suspicious values
+
+First, reformat data frame so multiple observations aren't grouped into single rows 
+```{r}
+fish <- fish %>%
+  filter(!is.na(quantity)) %>%
+  uncount(quantity)
+```
 
 Check fish lengths for suspicious values, using Q-Q plots to look at data values vs. quantiles:
 ```{r}
-#create qqplot for lengths
+# create qqplot for lengths
 fishlengths_qqplot <- fish %>%
   ggplot(aes(col = species)) + 
   stat_qq(aes(sample = length_cm)) + 
@@ -238,15 +245,14 @@ fishlengths_qqplot <- fish %>%
   facet_wrap( ~ species) + 
   theme_classic() + 
   theme(legend.position = "none")
-
-# what are these 8 extra qqplots with no species headers?
 ```
 
-Looks like there's some fishy-looking fish lengths so let's do some flagging
 
-**Issue!! - means calculated here are inaccurate - based on just length_cm variable - assumes only one individual per length
+~code good to here~
+
+Looks like there's some fishy-looking fish lengths so let's do some flagging
 ```{r}
-#create working fish length data frame with just relevant data, including min, max, mean, and sd
+# create working fish length data frame with just relevant data, including min, max, mean, and sd
 fishlengths <- fish %>%
   filter(species != "no_obs") %>% 
   select(X, species, length_cm) %>%
@@ -268,6 +274,8 @@ fishlengths$qc_flag <- ifelse(fishlengths$max >= (fishlengths$mean + 2.5*fishlen
 # merge QC flags back into OG fish data frame
 fish <- left_join(fish, (select(fishlengths, "X", "qc_flag")), on = "X")
 ```
+
+
 
 Check fish abundances for suspicious values:
 ```{r}
