@@ -226,14 +226,7 @@ inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "
 ```
 
 
-### Checking for suspicious values
-
-<!-- First, create version of fish data frame where multiple observations aren't grouped into single rows  -->
-<!-- ```{r} -->
-<!-- fish_allrows <- fish %>% -->
-<!--   filter(!is.na(quantity)) %>% -->
-<!--   uncount(quantity) -->
-<!-- ``` -->
+### Checking for suspicious values - fish
 
 Check fish lengths for suspicious values, using Q-Q plots to look at data values vs. quantiles:
 ```{r}
@@ -252,7 +245,7 @@ fishlengths_qqplot
 
 Looks like there might some fishy-looking fish lengths so let's do some flagging
 ```{r}
-# create working fish length data frame with just relevant data, including min, max, mean, and sd
+# create working fish length data frame with just relevant data, including mean and sd
 fishlengths <- fish %>%
   filter(!is.na(quantity)) %>%
   uncount(quantity) %>%
@@ -269,17 +262,12 @@ fishlengths$lower99 <- fishlengths$mean - 2.5*fishlengths$sd
 fishlengths$upper95 <- fishlengths$mean + 2*fishlengths$sd
 fishlengths$lower95 <- fishlengths$mean - 2*fishlengths$sd
 
-fishlengths$qc_flag <- ifelse(between(fishlengths$length_cm, fishlengths$upper95, fishlengths$lower95), "SVC",
+fishlengths$qc_flag_lengths <- ifelse(between(fishlengths$length_cm, fishlengths$upper95, fishlengths$lower95), "SVC",
                               ifelse(between(fishlengths$length_cm, fishlengths$upper99, fishlengths$lower99), "SVD", "AV"))
 
 # merge QC flags back into OG fish data frame
-fish <- left_join(fish, (select(fishlengths, "X", "qc_flag")), on = "X")
+fish <- left_join(fish, (select(fishlengths, "X", "qc_flag_lengths")), on = "X")
 ```
-
-^ apparently all the values are acceptable? check this
-
-
-~code good to here~
 
 Check fish abundances for suspicious values:
 ```{r}
@@ -288,17 +276,96 @@ Check fish abundances for suspicious values:
 # create new variable for transect, merging site_id, date, and collector together
 fish$transect <- paste(fish$site_id, fish$date, fish$collector, sep = "_")
 
-# create working fish abundance data frame with just relevant data, including min, max, mean, and sd
+# create working fish length data frame with just relevant data, including mean and sd
 fishabunds <- fish %>%
-  filter(species != "no_obs") %>%
+  filter(!is.na(quantity)) %>%
   select(X, transect, species, quantity) %>%
-  left_join(fish %>%
-  group_by(transect, species) %>%
-  summarise(min = min(quantity, na.rm = T),
-            max = max(quantity, na.rm = T),
-            mean = mean(quantity, na.rm = T),
-            sd = sd(quantity, na.rm = T)))
+  left_join(fish %>% 
+  group_by(transect, species) %>% 
+  summarise(mean = mean(length_cm, na.rm = T),
+            sd = sd(length_cm, na.rm = T)))
+
+# add qc flags
+fishabunds$upper99 <- fishabunds$mean + 2.5*fishabunds$sd
+fishabunds$lower99 <- fishabunds$mean - 2.5*fishabunds$sd
+fishabunds$upper95 <- fishabunds$mean + 2*fishabunds$sd
+fishabunds$lower95 <- fishabunds$mean - 2*fishabunds$sd
+
+fishabunds$qc_flag_abunds <- ifelse(between(fishabunds$quantity, fishabunds$upper95, fishabunds$lower95), "SVC",
+                              ifelse(between(fishabunds$quantity, fishabunds$upper99, fishabunds$lower99), "SVD", "AV"))
+
+# merge QC flags back into OG fish data frame
+fish <- left_join(fish, (select(fishabunds, "X", "qc_flag_abunds")), on = "X")
 ```
 
-Repeat for invertebrate lengths and abundances:
+### Checking for suspicious values - inverts
 
+Check inverts sizes for suspicious values, using Q-Q plots to look at data values vs. quantiles:
+```{r}
+# create qqplot for lengths
+invertssize_qqplot <- inverts %>%
+  ggplot(aes(col = species)) + 
+  stat_qq(aes(sample = size_cm)) + 
+  stat_qq_line(aes(sample = size_cm)) + 
+  facet_wrap( ~ species) + 
+  theme_classic() + 
+  theme(legend.position = "none")
+invertssize_qqplot
+```
+
+
+
+Looks great overall but let's still do some flagging using mean+sd method
+```{r}
+# create working invertsh length data frame with just relevant data, including mean and sd
+invertssize <- inverts %>%
+  filter(!is.na(quantity)) %>%
+  uncount(quantity) %>%
+  select(X, species, size_cm) %>%
+  left_join(inverts %>% 
+  group_by(species) %>% 
+  summarise(mean = mean(size_cm, na.rm = T),
+            sd = sd(size_cm, na.rm = T))) %>%
+  unique()
+
+# add qc flags
+invertssize$upper99 <- invertssize$mean + 2.5*invertssize$sd
+invertssize$lower99 <- invertssize$mean - 2.5*invertssize$sd
+invertssize$upper95 <- invertssize$mean + 2*invertssize$sd
+invertssize$lower95 <- invertssize$mean - 2*invertssize$sd
+
+invertssize$qc_flag_sizes <- ifelse(between(invertssize$size_cm, invertssize$upper95, invertssize$lower95), "SVC",
+                              ifelse(between(invertssize$size_cm, invertssize$upper99, invertssize$lower99), "SVD", "AV"))
+
+# merge QC flags back into OG fish data frame
+inverts <- left_join(inverts, (select(invertssize, "X", "qc_flag_sizes")), on = "X")
+```
+
+Check fish abundances for suspicious values:
+```{r}
+# note that for abundance, we'll want to group quantity by species and transect (unique combos of site_id, date, and collector) to look at average quantity per transect
+
+# create new variable for transect, merging site_id, date, and collector together
+inverts$transect <- paste(inverts$site_id, inverts$date, inverts$collector, sep = "_")
+
+# create working fish length data frame with just relevant data, including mean and sd
+invertsabunds <- inverts %>%
+  filter(!is.na(quantity)) %>%
+  select(X, transect, species, quantity) %>%
+  left_join(inverts %>% 
+  group_by(transect, species) %>% 
+  summarise(mean = mean(size_cm, na.rm = T),
+            sd = sd(size_cm, na.rm = T)))
+
+# add qc flags
+invertsabunds$upper99 <- invertsabunds$mean + 2.5*invertsabunds$sd
+invertsabunds$lower99 <- invertsabunds$mean - 2.5*invertsabunds$sd
+invertsabunds$upper95 <- invertsabunds$mean + 2*invertsabunds$sd
+invertsabunds$lower95 <- invertsabunds$mean - 2*invertsabunds$sd
+
+invertsabunds$qc_flag_abunds <- ifelse(between(invertsabunds$quantity, invertsabunds$upper95, invertsabunds$lower95), "SVC",
+                              ifelse(between(invertsabunds$quantity, invertsabunds$upper99, invertsabunds$lower99), "SVD", "AV"))
+
+# merge QC flags back into OG fish data frame
+inverts <- left_join(inverts, (select(invertsabunds, "X", "qc_flag_abunds")), on = "X")
+```
