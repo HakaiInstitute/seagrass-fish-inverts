@@ -32,7 +32,7 @@ events <- read.csv("../raw-data/seagrass_events.csv")
 
 ## Data Quality Check
 
-###Cross Reference Events
+### Cross Reference Events
 In order to ensure completeness of the fish and invertebrate datasets (i.e. all
 site visits are included), the data will be aggregated to the event level, and
 then cross referenced with the events data also loaded from the EIMS Portal. If
@@ -225,6 +225,26 @@ inverts_diversnames_tofix$replace <- c("kyle", "other")
 inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 ```
 
+And do the same for dive tenders while we're at it **How do we want to approach entries with multiple dive tenders?
+# ```{r}
+# # import list of acceptable tender names
+# techsnames_accepted <- read.csv("../raw-data/techs_names_list.csv", header = FALSE)
+# colnames(techsnames_accepted) <- "name"
+# 
+# # fix collector names in fish 
+# fish_techsnames_data <- unique(fish$dive_supervisor) %>% sort %>% data.frame
+# colnames(fish_techsnames_data) <- "name"
+# fish_techsnames_tofix <- anti_join(fish_techsnames_data, techsnames_accepted)
+# fish_techsnames_tofix$replace <- c("") 
+# fish <- FindReplace(fish, "dive_supervisor", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+# 
+# # fix collector names in inverts
+# inverts_techsnames_data <- unique(inverts$collector) %>% sort %>% data.frame
+# colnames(inverts_techsnames_data) <- "name"
+# inverts_techsnames_tofix <- anti_join(inverts_techsnames_data, techsnames_accepted)
+# inverts_techsnames_tofix$replace <- c("") 
+# inverts <- FindReplace(inverts, "dive_supervisor", inverts_techsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+# ```
 
 ### Checking for suspicious values - fish
 
