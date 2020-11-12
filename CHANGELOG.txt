@@ -15,3 +15,8 @@ project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Hakai Seagrass Protocol for in-depth explanation of methods 
 - Copy of Hakai Institute Metadata Form - Research Catalogue and Data Packaging Guide (to be filled in / renamed)
 - DATA_QC_LOG.txt to track data quality control measures taken on this project
+- README.txt as read me file for new package users
+- R folder containing:
+	- portal-api-data-load.R as R script for downloading fish and invertebrate data
+	- seagrass-fish-inverts.Rmd as RMarkdown file for compiling and cleaning data
+- raw-data folder containing csv files with raw data required to run seagrass-fish-inverts.Rmd
