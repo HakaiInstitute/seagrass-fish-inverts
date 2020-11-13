@@ -6,7 +6,11 @@ Hakai Institute Nearshore Program - Seagrass Fish & Macroinvertebrate Diversity 
 
 This data package is a component of the Hakai Institute’s Nearshore research and monitoring program, designed to quantify change in seagrass ecosystems. The overarching objective of Hakai Nearshore research is to investigate the role of habitats and their associated communities, in the face of stress and disturbances from global climate change and local coastal perturbations.
 
-This package contains a subset of the Hakai Nearshore seagrass monitoring data, made up of [number of .csv files]: [list .csv files]. 
+This package contains a subset of the Hakai Nearshore seagrass monitoring data, made up of 4 csv files:
+	- seagrass_events.csv
+	- seagrass_fish.csv
+	- seagrass_inverts.csv
+	- seagrass_names.csv
 
 For details on the methodology used in each of these surveys, please see the Hakai Seagrass Protocol found within this package.
 
@@ -18,4 +22,4 @@ This data is licensed under a Creative Commons Attribution 4.0 International Lic
 
 For a complete list of Hakai seagrass data packages, please refer to the Nearshore Seagrass Overview document: https://docs.google.com/document/d/1c4d7ZtkNbbsFT1RkSgELt5nFV6OahEsHxLA2vZI153I/edit?usp=sharing
 
-Please contact [email addresses for all contacts] for any questions.
+Please contact zach@hakai.org, faye.manning@hakai.org, or nearshore@hakai.org for any questions.
