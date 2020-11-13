@@ -165,7 +165,7 @@ write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
 Fix species names so there aren't multiple names for single species
 ```{r}
 # import list of acceptable fish names
-fishnames_accepted <- read.csv("../raw-data/fish_names_list.csv", header = FALSE)
+fishnames_accepted <- read.csv("../raw-data/names_fish.csv", header = FALSE)
 colnames(fishnames_accepted) <- "name"
 
 # create list of fish names in data that need fixing
@@ -186,7 +186,7 @@ fish$species[fish$species == "three spine stickleback (thst)"] <- "threespine_st
 Repeat for inverts names
 ```{r}
 # import list of acceptable inverts names
-invertsnames_accepted <- read.csv("../raw-data/inverts_names_list.csv", header = FALSE)
+invertsnames_accepted <- read.csv("../raw-data/names_inverts.csv", header = FALSE)
 colnames(invertsnames_accepted) <- "name"
 
 # create list of fish names in data that need fixing
@@ -207,7 +207,7 @@ fish$species[fish$species == "melabie"] <- "melibe"
 We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable in both the fish and inverts data frames since we'll be using those later
 ```{r}
 # import list of acceptable collector names
-diversnames_accepted <- read.csv("../raw-data/divers_names_list.csv", header = FALSE)
+diversnames_accepted <- read.csv("../raw-data/names_divers.csv", header = FALSE)
 colnames(diversnames_accepted) <- "name"
 
 # fix collector names in fish 
@@ -228,7 +228,7 @@ inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "
 And do the same for dive tenders while we're at it
 ```{r}
 # import list of acceptable tender names
-techsnames_accepted <- read.csv("../raw-data/techs_names_list.csv", header = FALSE)
+techsnames_accepted <- read.csv("../raw-data/names_techs.csv", header = FALSE)
 colnames(techsnames_accepted) <- "name"
 
 # fix tender names in fish
@@ -244,6 +244,11 @@ colnames(inverts_techsnames_data) <- "name"
 inverts_techsnames_tofix <- anti_join(inverts_techsnames_data, techsnames_accepted)
 inverts_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn", "angeleen,carolyn,krystal", "angeleen,gillian", "angeleen,gillian,zach", "angeleen,krystal", "angeleen,other", "angeleen,carolyn,krystal", "carolyn,krystal", "derek", "gillian", "gillian", "kyle,zach")
 inverts <- FindReplace(inverts, "dive_supervisor", inverts_techsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+```
+
+Also, all siphons should have size_cm as NA, so fix that here:
+```{r}
+inverts$size_cm <- replace(inverts$size_cm, grepl("siphon", inverts$species), NA)
 ```
 
 
@@ -338,7 +343,7 @@ invertssize_qqplot
 
 Looks great overall but let's still do some flagging using mean+sd method
 ```{r}
-# create working invertsh length data frame with just relevant data, including mean and sd
+# create working inverts length data frame with just relevant data, including mean and sd
 invertssize <- inverts %>%
   filter(!is.na(quantity)) %>%
   uncount(quantity) %>%
