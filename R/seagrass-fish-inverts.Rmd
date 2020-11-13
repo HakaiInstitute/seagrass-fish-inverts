@@ -246,6 +246,11 @@ inverts_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn", "angeleen,
 inverts <- FindReplace(inverts, "dive_supervisor", inverts_techsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 ```
 
+Also, all siphons should have size_cm as NA, so fix that here:
+```{r}
+inverts$size_cm <- replace(inverts$size_cm, grepl("siphon", inverts$species), NA)
+```
+
 
 ### Checking for suspicious values - fish
 
