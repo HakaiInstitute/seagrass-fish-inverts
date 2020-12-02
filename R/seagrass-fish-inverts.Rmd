@@ -31,6 +31,11 @@ events <- read.csv("../raw-data/seagrass_events.csv")
 names <- read.csv("../raw-data/seagrass_names.csv")
 ```
 
+Remove unneeded variables automatically added in portal
+```{r}
+events <- subset(events, select = -c(action, samples))
+```
+
 ## Data Quality Check
 
 ### Cross Reference Events
