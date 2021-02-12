@@ -12,6 +12,8 @@
 
 # load hakaiApi package
 library(hakaiApi)
+library(magrittr)
+library(dplyr)
 
 Client$remove_old_credentials()  # cached credentials can sometimes cause problems
 client <- hakaiApi::Client$new() # Follow stdout prompts to get an API token
