@@ -181,7 +181,7 @@ fishnames_tofix <- anti_join(fishnames_data, fishnames_accepted)
 fishnames_tofix <- filter(fishnames_tofix, name != "no_obs")
 
 # add corresponding acceptable fish names to replace ones that need fixing
-fishnames_tofix$replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "sole/c-o", "flatfish/soledab", "goby/bay", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted") 
+fishnames_tofix$replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "sole/c-o", "flatfish/soledab", "goby/bay", "greenling/white-spotted", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted") 
 
 fish <- FindReplace(fish, "species", fishnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
@@ -195,6 +195,9 @@ Repeat for inverts names
 invertsnames_accepted <- names$inverts %>% data.frame
 colnames(invertsnames_accepted) <- "name"
 
+# fix misspelling
+inverts$species <- gsub("melabie", "melibe", inverts$species)
+
 # create list of fish names in data that need fixing
 invertsnames_data <- unique(inverts$species) %>% sort %>% data.frame
 colnames(invertsnames_data) <- "name"
@@ -202,12 +205,9 @@ invertsnames_tofix <- anti_join(invertsnames_data, invertsnames_accepted)
 invertsnames_tofix <- filter(invertsnames_tofix, name != "no_obs")
 
 # add corresponding acceptable fish names to replace ones that need fixing
-invertsnames_tofix$replace <- c("snail/pomaulax", "chiton/unknown", "chiton/unknown", "chiton/unknown", "siphon/cockle", "chiton/gumboot", "seacucumber/other", "nudibranch/dendronotus", "seastar/dermasterias", "snail/dire_whelk", "chiton/gumboot", "isopod/idotea", "seastar/leptasterias", "seastar/evasterias", "nudibranch/melibe", "crab/hermit", "crab/hermit", "seastar/pisaster_ochraceus", "snail/pomaulax", "snail/pomaulax", "snail/purple_olive", "clam/purple_velvet", "urchin/sand_dollar", "seacucumber/other", "seapen/orange", "worm/other", "nudibranch/other", "snail/dire_whelk", "seacucumber/other") 
+invertsnames_tofix$replace <- c("painted/anemone", "snail/pomaulax", "chiton/unknown", "chiton/unknown", "chiton/unknown", "siphon/cockle", "crab/cancer", "crab/dungeness", "crab/hermit", "crab/northern_kelp", "crab/pugettia", "crab/red_rock", "crab/unknown", "crab/pugettia", "chiton/gumboot", "seacucumber/other", "nudibranch/dendronotus", "seastar/dermasterias", "snail/dire_whelk","seastar/evasterias", "seastar/evasterias", "chiton/gumboot", "isopod/idotea", "seastar/leptasterias", "seastar/evasterias", "snail/other", "nudibranch/melibe", "nudibranch/unknown","nudibranch/other", "crab/hermit", "crab/hermit", "seastar/pisaster_ochraceus", "snail/pomaulax", "snail/pomaulax", "snail/pomaulax", "crab/pugettia", "snail/purple_olive", "snail/purple_olive", "clam/purple_velvet", "urchin/sand_dollar", "seacucumber/other", "seastar/dermasterias", "seapen/orange", "seastar/dermasterias", "seastar/pycnopodia", "seastar/dermasterias", "worm/other", "shrimp/pandalus", "siphon/geoduck", "siphon/horse_clam", "siphon/unknown", "nudibranch/other", "snail/pomaulax", "snail/tegula", "snail/unknown", "snail/dire_whelk", "seacucumber/other") 
 
 inverts <- FindReplace(inverts, "species", invertsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
-
-# fix misspelling
-fish$species[fish$species == "melabie"] <- "melibe"
 ```
 
 We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable in both the fish and inverts data frames since we'll be using those later
@@ -241,14 +241,14 @@ colnames(techsnames_accepted) <- "name"
 fish_techsnames_data <- unique(fish$dive_supervisor) %>% sort %>% data.frame
 colnames(fish_techsnames_data) <- "name"
 fish_techsnames_tofix <- anti_join(fish_techsnames_data, techsnames_accepted)
-fish_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn", "angeleen,carolyn", "angeleen,carolyn,krystal", "angeleen,carolyn,zach", "angeleen,gillian", "angeleen,gillian,zach", "angeleen,krystal", "angeleen,other", "angeleen,zach", "angeleen,carolyn,krystal", "carolyn,krystal", "derek", "derek,kyle", "gillian", "gillian", "kyle,zach", "zach")
+fish_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn", "angeleen,carolyn,zach", "angeleen,zach", "angeleen,carolyn,krystal", "derek", "derek,kyle", "gillian", "gillian", "zach")
 fish <- FindReplace(fish, "dive_supervisor", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
 # fix tender names in inverts
 inverts_techsnames_data <- unique(inverts$dive_supervisor) %>% sort %>% data.frame
 colnames(inverts_techsnames_data) <- "name"
 inverts_techsnames_tofix <- anti_join(inverts_techsnames_data, techsnames_accepted)
-inverts_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn", "angeleen,carolyn,krystal", "angeleen,gillian", "angeleen,gillian,zach", "angeleen,krystal", "angeleen,other", "angeleen,carolyn,krystal", "carolyn,krystal", "derek", "gillian", "gillian", "kyle,zach")
+inverts_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn,krystal", "derek", "gillian", "gillian")
 inverts <- FindReplace(inverts, "dive_supervisor", inverts_techsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 ```
 
@@ -369,7 +369,7 @@ invertssize$lower95 <- invertssize$mean - 2*invertssize$sd
 invertssize$qc_flag_sizes <- ifelse(between(invertssize$size_cm, invertssize$upper95, invertssize$lower95), "SVC",
                               ifelse(between(invertssize$size_cm, invertssize$upper99, invertssize$lower99), "SVD", "AV"))
 
-# merge QC flags back into OG fish data frame
+# merge QC flags back into OG inverts data frame
 inverts <- left_join(inverts, (select(invertssize, "X", "qc_flag_sizes")), on = "X")
 ```
 
