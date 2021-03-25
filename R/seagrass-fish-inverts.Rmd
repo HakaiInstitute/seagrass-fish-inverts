@@ -181,7 +181,7 @@ fishnames_tofix <- anti_join(fishnames_data, fishnames_accepted)
 fishnames_tofix <- filter(fishnames_tofix, name != "no_obs")
 
 # add corresponding acceptable fish names to replace ones that need fixing
-fishnames_tofix$replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "sole/c-o", "flatfish/soledab", "goby/bay", "greenling/white-spotted", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted") 
+fishnames_tofix$replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "flatfish/soledab", "sole/c-o", "flatfish/soledab", "goby/bay", "goby/blackeye", "greenling/white-spotted", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "rockfish/black-yellowtail_complex", "rockfish/bocaccio", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted") 
 
 fish <- FindReplace(fish, "species", fishnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
@@ -220,14 +220,14 @@ colnames(diversnames_accepted) <- "name"
 fish_diversnames_data <- unique(fish$collector) %>% sort %>% data.frame
 colnames(fish_diversnames_data) <- "name"
 fish_diversnames_tofix <- anti_join(fish_diversnames_data, diversnames_accepted)
-fish_diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach") 
+fish_diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach", "zach") 
 fish <- FindReplace(fish, "collector", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 
 # fix collector names in inverts
 inverts_diversnames_data <- unique(inverts$collector) %>% sort %>% data.frame
 colnames(inverts_diversnames_data) <- "name"
 inverts_diversnames_tofix <- anti_join(inverts_diversnames_data, diversnames_accepted)
-inverts_diversnames_tofix$replace <- c("kyle", "other") 
+inverts_diversnames_tofix$replace <- c("kyle", "other", "zach") 
 inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 ```
 
@@ -345,12 +345,12 @@ invertssize_qqplot <- inverts %>%
 invertssize_qqplot
 ```
 
-
+-- code below not working yet --
 
 Looks great overall but let's still do some flagging using mean+sd method
 ```{r}
-# create working inverts length data frame with just relevant data, including mean and sd
-invertssize <- inverts %>%
+# create working inverts size data frame with just relevant data, including mean and sd
+invertssizes <- inverts %>%
   filter(!is.na(quantity)) %>%
   uncount(quantity) %>%
   select(X, species, size_cm) %>%
@@ -361,16 +361,16 @@ invertssize <- inverts %>%
   unique()
 
 # add qc flags
-invertssize$upper99 <- invertssize$mean + 2.5*invertssize$sd
-invertssize$lower99 <- invertssize$mean - 2.5*invertssize$sd
-invertssize$upper95 <- invertssize$mean + 2*invertssize$sd
-invertssize$lower95 <- invertssize$mean - 2*invertssize$sd
+invertssizes$upper99 <- invertssizes$mean + 2.5*invertssizes$sd
+invertssizes$lower99 <- invertssizes$mean - 2.5*invertssizes$sd
+invertssizes$upper95 <- invertssizes$mean + 2*invertssizes$sd
+invertssizes$lower95 <- invertssizes$mean - 2*invertssizes$sd
 
-invertssize$qc_flag_sizes <- ifelse(between(invertssize$size_cm, invertssize$upper95, invertssize$lower95), "SVC",
-                              ifelse(between(invertssize$size_cm, invertssize$upper99, invertssize$lower99), "SVD", "AV"))
+invertssizes$qc_flag_lengths <- ifelse(between(invertssizes$size_cm, invertssizes$upper95, invertssizes$lower95), "SVC",
+                              ifelse(between(invertssizes$size_cm, invertssizes$upper99, invertssizes$lower99), "SVD", "AV"))
 
-# merge QC flags back into OG inverts data frame
-inverts <- left_join(inverts, (select(invertssize, "X", "qc_flag_sizes")), on = "X")
+# merge QC flags back into OG fish data frame
+inverts <- left_join(inverts, (select(invertssizes, "X", "qc_flag_lengths")), on = "X")
 ```
 
 Check fish abundances for suspicious values:
