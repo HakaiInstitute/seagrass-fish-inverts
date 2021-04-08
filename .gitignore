@@ -1,2 +1,7 @@
 fish_events_to_QC.csv
 inverts_events_to_QC.csv
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj

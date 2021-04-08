@@ -288,14 +288,17 @@ fishlengths <- fish %>%
             sd = sd(length_cm, na.rm = T))) %>%
   unique()
 
-# add qc flags
+# make qc flag bounds
 fishlengths$upper99 <- fishlengths$mean + 2.5*fishlengths$sd
 fishlengths$lower99 <- fishlengths$mean - 2.5*fishlengths$sd
 fishlengths$upper95 <- fishlengths$mean + 2*fishlengths$sd
 fishlengths$lower95 <- fishlengths$mean - 2*fishlengths$sd
 
-fishlengths$qc_flag_lengths <- ifelse(between(fishlengths$length_cm, fishlengths$upper95, fishlengths$lower95), "SVC",
-                              ifelse(between(fishlengths$length_cm, fishlengths$upper99, fishlengths$lower99), "SVD", "AV"))
+# assign qc flags
+fishlengths$qc_flag_lengths <- ifelse(fishlengths$length_cm < fishlengths$lower99, "SVD",
+                                     ifelse(fishlengths$length_cm < fishlengths$lower95, "SVC",
+                                             ifelse(fishlengths$length_cm < fishlengths$upper95, "AV",
+                                                     ifelse(fishlengths$length_cm < fishlengths$upper99, "SVC", "SVD"))))
 
 # merge QC flags back into OG fish data frame
 fish <- left_join(fish, (select(fishlengths, "X", "qc_flag_lengths")), on = "X")
@@ -314,17 +317,20 @@ fishabunds <- fish %>%
   select(X, transect, species, quantity) %>%
   left_join(fish %>% 
   group_by(transect, species) %>% 
-  summarise(mean = mean(length_cm, na.rm = T),
-            sd = sd(length_cm, na.rm = T)))
+  summarise(mean = mean(quantity, na.rm = T),
+            sd = sd(quantity, na.rm = T)))
 
-# add qc flags
+# make qc flags bounds
 fishabunds$upper99 <- fishabunds$mean + 2.5*fishabunds$sd
 fishabunds$lower99 <- fishabunds$mean - 2.5*fishabunds$sd
 fishabunds$upper95 <- fishabunds$mean + 2*fishabunds$sd
 fishabunds$lower95 <- fishabunds$mean - 2*fishabunds$sd
 
-fishabunds$qc_flag_abunds <- ifelse(between(fishabunds$quantity, fishabunds$upper95, fishabunds$lower95), "SVC",
-                              ifelse(between(fishabunds$quantity, fishabunds$upper99, fishabunds$lower99), "SVD", "AV"))
+# assign qc flags
+fishabunds$qc_flag_abunds <- ifelse(fishabunds$quantity < fishabunds$lower99, "SVD",
+                                     ifelse(fishabunds$quantity < fishabunds$lower95, "SVC",
+                                             ifelse(fishabunds$quantity < fishabunds$upper95, "AV",
+                                                     ifelse(fishabunds$quantity < fishabunds$upper99, "SVC", "SVD"))))
 
 # merge QC flags back into OG fish data frame
 fish <- left_join(fish, (select(fishabunds, "X", "qc_flag_abunds")), on = "X")
@@ -345,8 +351,6 @@ invertssize_qqplot <- inverts %>%
 invertssize_qqplot
 ```
 
--- code below not working yet --
-
 Looks great overall but let's still do some flagging using mean+sd method
 ```{r}
 # create working inverts size data frame with just relevant data, including mean and sd
@@ -360,20 +364,23 @@ invertssizes <- inverts %>%
             sd = sd(size_cm, na.rm = T))) %>%
   unique()
 
-# add qc flags
+# make qc flags bounds
 invertssizes$upper99 <- invertssizes$mean + 2.5*invertssizes$sd
 invertssizes$lower99 <- invertssizes$mean - 2.5*invertssizes$sd
 invertssizes$upper95 <- invertssizes$mean + 2*invertssizes$sd
 invertssizes$lower95 <- invertssizes$mean - 2*invertssizes$sd
 
-invertssizes$qc_flag_lengths <- ifelse(between(invertssizes$size_cm, invertssizes$upper95, invertssizes$lower95), "SVC",
-                              ifelse(between(invertssizes$size_cm, invertssizes$upper99, invertssizes$lower99), "SVD", "AV"))
+# add qc flags
+invertssizes$qc_flag_sizes <- ifelse(invertssizes$size_cm < invertssizes$lower99, "SVD",
+                                     ifelse(invertssizes$size_cm < invertssizes$lower95, "SVC",
+                                             ifelse(invertssizes$size_cm < invertssizes$upper95, "AV",
+                                                     ifelse(invertssizes$size_cm < invertssizes$upper99, "SVC", "SVD"))))
 
-# merge QC flags back into OG fish data frame
-inverts <- left_join(inverts, (select(invertssizes, "X", "qc_flag_lengths")), on = "X")
+# merge QC flags back into OG inverts data frame
+inverts <- left_join(inverts, (select(invertssizes, "X", "qc_flag_sizes")), on = "X")
 ```
 
-Check fish abundances for suspicious values:
+Check inverts abundances for suspicious values:
 ```{r}
 # note that for abundance, we'll want to group quantity by species and transect (unique combos of site_id, date, and collector) to look at average quantity per transect
 
@@ -389,15 +396,18 @@ invertsabunds <- inverts %>%
   summarise(mean = mean(size_cm, na.rm = T),
             sd = sd(size_cm, na.rm = T)))
 
-# add qc flags
+# make qc flags bounds
 invertsabunds$upper99 <- invertsabunds$mean + 2.5*invertsabunds$sd
 invertsabunds$lower99 <- invertsabunds$mean - 2.5*invertsabunds$sd
 invertsabunds$upper95 <- invertsabunds$mean + 2*invertsabunds$sd
 invertsabunds$lower95 <- invertsabunds$mean - 2*invertsabunds$sd
 
-invertsabunds$qc_flag_abunds <- ifelse(between(invertsabunds$quantity, invertsabunds$upper95, invertsabunds$lower95), "SVC",
-                              ifelse(between(invertsabunds$quantity, invertsabunds$upper99, invertsabunds$lower99), "SVD", "AV"))
+# add qc flags
+invertsabunds$qc_flag_abunds <- ifelse(invertsabunds$quantity < invertsabunds$lower99, "SVD",
+                                     ifelse(invertsabunds$quantity < invertsabunds$lower95, "SVC",
+                                             ifelse(invertsabunds$quantity < invertsabunds$upper95, "AV",
+                                                     ifelse(invertsabunds$quantity < invertsabunds$upper99, "SVC", "SVD"))))
 
-# merge QC flags back into OG fish data frame
+# merge QC flags back into OG inverts data frame
 inverts <- left_join(inverts, (select(invertsabunds, "X", "qc_flag_abunds")), on = "X")
 ```
