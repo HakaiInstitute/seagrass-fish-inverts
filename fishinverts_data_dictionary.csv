@@ -25,6 +25,8 @@ events,field_staff,categorical,names of all field staff present
 events,gather_lat,categorical,latitude on which data were collected
 events,gather_long,categorical,longitude on which data were collected
 events,vessel,categorical,vessel from which data were collected
-events,quality_level,categorical,level to which data has been quality checked and/or cleaned
 "fish, inverts, events",comments,character,any comments pertaining to the sample
 "fish, inverts, events",quality_log,character,comments pertaining to the QC status of the data
+fish,qc_flag_lengths,categorical,"informative labels for fish length data, based on Hakai Quality Flags: AV (within mean ± 2 standard deviations), SVC (within mean ± 2.5 standard deviations), SVD (not within mean ± 2.5 standard deviations)"
+inverts,qc_flag_sizes,categorical,"informative labels for invertebrate size data, based on Hakai Quality Flags: AV (within mean ± 2 standard deviations), SVC (within mean ± 2.5 standard deviations), SVD (not within mean ± 2.5 standard deviations)"
+"fish, inverts",qc_flag_abunds,categorical,"informative labels for fish and invertebrate abundances (quantity grouped by species and transect) , based on Hakai Quality Flags: AV (within mean ± 2 standard deviations), SVC (within mean ± 2.5 standard deviations), SVD (not within mean ± 2.5 standard deviations)"

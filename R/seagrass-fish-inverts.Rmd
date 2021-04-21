@@ -332,8 +332,9 @@ fishabunds$qc_flag_abunds <- ifelse(fishabunds$quantity < fishabunds$lower99, "S
                                              ifelse(fishabunds$quantity < fishabunds$upper95, "AV",
                                                      ifelse(fishabunds$quantity < fishabunds$upper99, "SVC", "SVD"))))
 
-# merge QC flags back into OG fish data frame
+# merge QC flags back into OG fish data frame and remove transects column 
 fish <- left_join(fish, (select(fishabunds, "X", "qc_flag_abunds")), on = "X")
+fish <- subset(fish, select = -(transect))
 ```
 
 ### Checking for suspicious values - inverts
@@ -408,6 +409,7 @@ invertsabunds$qc_flag_abunds <- ifelse(invertsabunds$quantity < invertsabunds$lo
                                              ifelse(invertsabunds$quantity < invertsabunds$upper95, "AV",
                                                      ifelse(invertsabunds$quantity < invertsabunds$upper99, "SVC", "SVD"))))
 
-# merge QC flags back into OG inverts data frame
+# merge QC flags back into OG inverts data frame and remove transects column 
 inverts <- left_join(inverts, (select(invertsabunds, "X", "qc_flag_abunds")), on = "X")
+inverts <- subset(inverts, select = -(transect))
 ```
