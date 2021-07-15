@@ -161,7 +161,7 @@ inverts_events_to_QC <-
                !(year(date) >= 2018 & survey =="TRIQUET_NORTH"), 
                  !(year(date) >= 2018 & survey =="TRIQUET_BAY"))
 
-## save `fish_events_to_QC` to .csv:
+## save `inverts_events_to_QC` to .csv:
 write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
 ```
 
