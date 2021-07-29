@@ -113,6 +113,7 @@ fish_events_to_QC <-
   mutate(issue = case_when(is.na(n_fish_surveys) ~ "both surveys missing",
                            n_fish_surveys == 1 ~ "one survey missing",
                            n_fish_surveys > 2 ~ "too many surveys")) %>%
+  
 ## 2015 data not in the data portal currently
   filter(year(date) != 2015) %>%
   
