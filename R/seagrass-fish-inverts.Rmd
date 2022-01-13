@@ -5,26 +5,37 @@ date: '2020-07-10'
 output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 # Seagrass Fish and Inverts Data Package
+
 ## Purpose
 This script serves to collect, aggregate, and QC fish and macroinvertebrate
 survey data from the Hakai Nearshore Seagrass project.
 
+***
 
-## Setup - packages
-This script will use multiple data packages, and source scripts. If you do not
-already have the necessary data packages installed, please install them at this
-point using `install.packages("PACKAGE_NAME")` in the console window.
-```{r setup, include = FALSE, echo = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+## Setup
 
-# load packages
-library(tidyverse)
-library(magrittr)
-library(lubridate)
-library(DataCombine)
+Clear work space prior to starting
+```{r}
+rm(list = ls())
+```
 
-# load data
+Load necessary packages
+```{r}
+lapply(c("tidyverse",
+         "lubridate", 
+         "magrittr",
+         "DataCombine"),
+       library,
+       character.only = TRUE)
+```
+
+Load data
+```{r}
 fish <- read.csv("../raw-data/seagrass_fish.csv")
 inverts <- read.csv("../raw-data/seagrass_inverts.csv")
 events <- read.csv("../raw-data/seagrass_events.csv")
@@ -35,6 +46,7 @@ Remove unneeded variables automatically added in portal
 ```{r}
 events <- subset(events, select = -c(action, samples))
 ```
+
 
 ## Data Quality Check
 
