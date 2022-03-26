@@ -40,6 +40,7 @@ fish <- read.csv("../raw-data/seagrass_fish.csv")
 inverts <- read.csv("../raw-data/seagrass_inverts.csv")
 events <- read.csv("../raw-data/seagrass_events.csv")
 names <- read.csv("../raw-data/seagrass_names.csv")
+namestofix <- read.csv("../raw-data/seagrass_namestofix.csv")
 ```
 
 Remove unneeded variables automatically added in portal
@@ -137,7 +138,7 @@ fish_events_to_QC <-
                  !(year(date) >= 2018 & survey =="TRIQUET_BAY"))
 
 ## save `fish_events_to_QC` to .csv:
-write.csv(fish_events_to_QC, "../raw-data/fish_events_to_QC.csv")
+write.csv(fish_events_to_QC, "../output/fish_events_to_QC.csv")
 
 # subset out events without the appropriate number of invert surveys
 ## all data missing (both surveys)
@@ -175,95 +176,110 @@ inverts_events_to_QC <-
                  !(year(date) >= 2018 & survey =="TRIQUET_BAY"))
 
 ## save `inverts_events_to_QC` to .csv:
-write.csv(inverts_events_to_QC, "../raw-data/inverts_events_to_QC.csv")
+write.csv(inverts_events_to_QC, "../output/inverts_events_to_QC.csv")
 ```
 
 
 ### Fixing names
 
+#### Fish names
+
 Fix species names so there aren't multiple names for single species
 ```{r}
+# replacement using FindReplace
+fish <- FindReplace(fish, "species", namestofix, from = "fish_name", to = "fish_replace", exact = TRUE, vector = FALSE)
+```
+
+Use this code to check for anything that didn't work; update "namestofix.csv" and rerun if needed
+```{r}
 # import list of acceptable fish names
-fishnames_accepted <- names$fish %>% data.frame
-colnames(fishnames_accepted) <- "name"
+fishnames_good <- names$fish %>% data.frame
+colnames(fishnames_good) <- "name"
 
 # create list of fish names in data that need fixing
-fishnames_data <- unique(fish$species) %>% sort %>% data.frame
-colnames(fishnames_data) <- "name"
-fishnames_tofix <- anti_join(fishnames_data, fishnames_accepted)
+fishnames_tofix <- unique(fish$species) %>% sort %>% data.frame
+colnames(fishnames_tofix) <- "name"
+fishnames_tofix <- anti_join(fishnames_tofix, fishnames_good)
 fishnames_tofix <- filter(fishnames_tofix, name != "no_obs")
+```
 
-# add corresponding acceptable fish names to replace ones that need fixing
-fishnames_tofix$replace <- c("flounder/arrow_tooth", "goby/bay", "pipefish/bay", "skate/big", "sole/c-o", "rockfish/deacon", "sole/english", "sole/english", "flatfish/soledab", "sole/c-o", "flatfish/soledab", "goby/bay", "goby/blackeye", "greenling/white-spotted", "greenling/white-spotted", "flounder/pacific_sanddab", "flounder/pacific_sanddab", "greenling/painted", "flounder/pacific_sanddab", "prickleback/snake", "sole/rock", "rockfish/deacon", "rockfish/deacon", "rockfish/black-yellowtail_complex", "rockfish/bocaccio", "sole/sand", "flounder/pacific_sanddab", "skate/unknown", "sole/unknown", "sole/english", "sole/unknown", "flatfish/soledab", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "threespine_stickleback", "cod/unknown", "flatfish/unknown", "flatfish/unknown", "rockfish/vermillion", "greenling/white-spotted", "greenling/white-spotted") 
-
-fish <- FindReplace(fish, "species", fishnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
-
-# FindReplace had trouble with replacing the one name containing parentheses, fix that here
+Fix stragglers (special characters)
+```{r}
+# FindReplace had trouble with replacing the one name containing parentheses
 fish$species[fish$species == "three spine stickleback (thst)"] <- "threespine_stickleback"
 ```
 
-Repeat for inverts names
+#### Inverts names
+
+Fix species names so there aren't multiple names for single species
+```{r}
+# replacement using FindReplace
+inverts <- FindReplace(inverts, "species", namestofix, from = "inverts_name", to = "inverts_replace", exact = TRUE, vector = FALSE)
+```
+
+Use this code to check for anything that didn't work; update "namestofix.csv" and rerun if needed
 ```{r}
 # import list of acceptable inverts names
-invertsnames_accepted <- names$inverts %>% data.frame
-colnames(invertsnames_accepted) <- "name"
+invertsnames_good <- names$inverts %>% data.frame
+colnames(invertsnames_good) <- "name"
 
-# fix misspelling
-inverts$species <- gsub("melabie", "melibe", inverts$species)
-
-# create list of fish names in data that need fixing
-invertsnames_data <- unique(inverts$species) %>% sort %>% data.frame
-colnames(invertsnames_data) <- "name"
-invertsnames_tofix <- anti_join(invertsnames_data, invertsnames_accepted)
+# create list of inverts names in data that need fixing
+invertsnames_tofix <- unique(inverts$species) %>% sort %>% data.frame
+colnames(invertsnames_tofix) <- "name"
+invertsnames_tofix <- anti_join(invertsnames_tofix, invertsnames_good)
 invertsnames_tofix <- filter(invertsnames_tofix, name != "no_obs")
-
-# add corresponding acceptable fish names to replace ones that need fixing
-invertsnames_tofix$replace <- c("painted/anemone", "snail/pomaulax", "chiton/unknown", "chiton/unknown", "chiton/unknown", "siphon/cockle", "crab/cancer", "crab/dungeness", "crab/hermit", "crab/northern_kelp", "crab/pugettia", "crab/red_rock", "crab/unknown", "crab/pugettia", "chiton/gumboot", "seacucumber/other", "nudibranch/dendronotus", "seastar/dermasterias", "snail/dire_whelk","seastar/evasterias", "seastar/evasterias", "chiton/gumboot", "isopod/idotea", "seastar/leptasterias", "seastar/evasterias", "snail/other", "nudibranch/melibe", "nudibranch/unknown","nudibranch/other", "crab/hermit", "crab/hermit", "seastar/pisaster_ochraceus", "snail/pomaulax", "snail/pomaulax", "snail/pomaulax", "crab/pugettia", "snail/purple_olive", "snail/purple_olive", "clam/purple_velvet", "urchin/sand_dollar", "seacucumber/other", "seastar/dermasterias", "seapen/orange", "seastar/dermasterias", "seastar/pycnopodia", "seastar/dermasterias", "worm/other", "shrimp/pandalus", "siphon/geoduck", "siphon/horse_clam", "siphon/unknown", "nudibranch/other", "snail/pomaulax", "snail/tegula", "snail/unknown", "snail/dire_whelk", "seacucumber/other") 
-
-inverts <- FindReplace(inverts, "species", invertsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
 ```
 
-We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable in both the fish and inverts data frames since we'll be using those later
+Fix stragglers (special characters)
 ```{r}
-# import list of acceptable collector names
-diversnames_accepted <- names$divers %>% data.frame
-colnames(diversnames_accepted) <- "name"
-
-# fix collector names in fish 
-fish_diversnames_data <- unique(fish$collector) %>% sort %>% data.frame
-colnames(fish_diversnames_data) <- "name"
-fish_diversnames_tofix <- anti_join(fish_diversnames_data, diversnames_accepted)
-fish_diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach", "zach") 
-fish <- FindReplace(fish, "collector", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
-
-# fix collector names in inverts
-inverts_diversnames_data <- unique(inverts$collector) %>% sort %>% data.frame
-colnames(inverts_diversnames_data) <- "name"
-inverts_diversnames_tofix <- anti_join(inverts_diversnames_data, diversnames_accepted)
-inverts_diversnames_tofix$replace <- c("kyle", "other", "zach") 
-inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+# FindReplace had trouble with replacing the one name containing parentheses
+inverts$species[inverts$species == "bat?"] <- "seastar/evasterias"
 ```
 
-And do the same for dive tenders while we're at it
-```{r}
-# import list of acceptable tender names
-techsnames_accepted <- names$techs %>% data.frame
-colnames(techsnames_accepted) <- "name"
+#### Collector and dive tender names 
 
-# fix tender names in fish
-fish_techsnames_data <- unique(fish$dive_supervisor) %>% sort %>% data.frame
-colnames(fish_techsnames_data) <- "name"
-fish_techsnames_tofix <- anti_join(fish_techsnames_data, techsnames_accepted)
-fish_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn", "angeleen,carolyn,zach", "angeleen,zach", "angeleen,carolyn,krystal", "derek", "derek,kyle", "gillian", "gillian", "zach")
-fish <- FindReplace(fish, "dive_supervisor", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
+Update this to match fish/inverts name fixing:
+<!-- We seem to have the same naming issue for some other variables; let's fix this for the "collector" (i.e. diver) variable in both the fish and inverts data frames since we'll be using those later -->
+<!-- ```{r} -->
+<!-- # import list of acceptable collector names -->
+<!-- diversnames_accepted <- names$divers %>% data.frame -->
+<!-- colnames(diversnames_accepted) <- "name" -->
 
-# fix tender names in inverts
-inverts_techsnames_data <- unique(inverts$dive_supervisor) %>% sort %>% data.frame
-colnames(inverts_techsnames_data) <- "name"
-inverts_techsnames_tofix <- anti_join(inverts_techsnames_data, techsnames_accepted)
-inverts_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn,krystal", "derek", "gillian", "gillian")
-inverts <- FindReplace(inverts, "dive_supervisor", inverts_techsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE)
-```
+<!-- # fix collector names in fish  -->
+<!-- fish_diversnames_data <- unique(fish$collector) %>% sort %>% data.frame -->
+<!-- colnames(fish_diversnames_data) <- "name" -->
+<!-- fish_diversnames_tofix <- anti_join(fish_diversnames_data, diversnames_accepted) -->
+<!-- fish_diversnames_tofix$replace <- c("andrew", "derek", "derek", "kyle", "ondine", "other", "zach", "zach")  -->
+<!-- fish <- FindReplace(fish, "collector", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE) -->
+
+<!-- # fix collector names in inverts -->
+<!-- inverts_diversnames_data <- unique(inverts$collector) %>% sort %>% data.frame -->
+<!-- colnames(inverts_diversnames_data) <- "name" -->
+<!-- inverts_diversnames_tofix <- anti_join(inverts_diversnames_data, diversnames_accepted) -->
+<!-- inverts_diversnames_tofix$replace <- c("kyle", "other", "zach")  -->
+<!-- inverts <- FindReplace(inverts, "collector", inverts_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE) -->
+<!-- ``` -->
+
+<!-- And do the same for dive tenders while we're at it -->
+<!-- ```{r} -->
+<!-- # import list of acceptable tender names -->
+<!-- techsnames_accepted <- names$techs %>% data.frame -->
+<!-- colnames(techsnames_accepted) <- "name" -->
+
+<!-- # fix tender names in fish -->
+<!-- fish_techsnames_data <- unique(fish$dive_supervisor) %>% sort %>% data.frame -->
+<!-- colnames(fish_techsnames_data) <- "name" -->
+<!-- fish_techsnames_tofix <- anti_join(fish_techsnames_data, techsnames_accepted) -->
+<!-- fish_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn", "angeleen,carolyn,zach", "angeleen,zach", "angeleen,carolyn,krystal", "derek", "derek,kyle", "gillian", "gillian", "zach") -->
+<!-- fish <- FindReplace(fish, "dive_supervisor", fish_diversnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE) -->
+
+<!-- # fix tender names in inverts -->
+<!-- inverts_techsnames_data <- unique(inverts$dive_supervisor) %>% sort %>% data.frame -->
+<!-- colnames(inverts_techsnames_data) <- "name" -->
+<!-- inverts_techsnames_tofix <- anti_join(inverts_techsnames_data, techsnames_accepted) -->
+<!-- inverts_techsnames_tofix$replace <- c("angeleen", "angeleen,carolyn,krystal", "derek", "gillian", "gillian") -->
+<!-- inverts <- FindReplace(inverts, "dive_supervisor", inverts_techsnames_tofix, from = "name", to = "replace", exact = TRUE, vector = FALSE) -->
+<!-- ``` -->
 
 Also, all siphons should have size_cm as NA, so fix that here:
 ```{r}
@@ -401,7 +417,7 @@ Check inverts abundances for suspicious values:
 # create new variable for transect, merging site_id, date, and collector together
 inverts$transect <- paste(inverts$site_id, inverts$date, inverts$collector, sep = "_")
 
-# create working fish length data frame with just relevant data, including mean and sd
+# create working inverts length data frame with just relevant data, including mean and sd
 invertsabunds <- inverts %>%
   filter(!is.na(quantity)) %>%
   select(X, transect, species, quantity) %>%
