@@ -180,6 +180,18 @@ write.csv(inverts_events_to_QC, "../output/inverts_events_to_QC.csv")
 ```
 
 
+### Portal issues fix
+
+Portal issues caused some rows to be added instead of updated (Hakai IDs should not appear more than once)
+```{r}
+fish <- fish %>% distinct() %>% filter(action == "")
+
+inverts <- inverts %>% 
+  group_by(hakai_id) %>% 
+  summarise_all(list(~ .[!is.na(.)][1])) %>% 
+  relocate(hakai_id, .after = collector) %>%
+  filter(action == "")
+```
 
 
 
