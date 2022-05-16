@@ -415,7 +415,7 @@ fish <- subset(fish, select = -(transect))
 remove(fishabunds)
 ```
 
-### QC flagging - fish
+### QC flagging - inverts
 
 Check inverts sizes for suspicious values, using Q-Q plots to look at data values vs. quantiles:
 ```{r}
