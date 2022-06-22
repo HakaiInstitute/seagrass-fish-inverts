@@ -43,9 +43,11 @@ names <- read.csv("../raw-data/seagrass_names.csv")
 namestofix <- read.csv("../raw-data/seagrass_namestofix.csv")
 ```
 
-Remove variables from events that are for portal use only
+Remove variables that are for portal use only
 ```{r}
 events <- subset(events, select = -c(action, samples))
+fish <- subset(fish, select = -action)
+inverts <- subset(inverts, select = -action)
 ```
 
 ***
@@ -55,16 +57,16 @@ events <- subset(events, select = -c(action, samples))
 ### Portal issues fix (these may be removable once the issues are resolved)
 
 Portal issues caused some rows to be added instead of updated (Hakai IDs should not appear more than once), so remove duplicate/extra rows
-```{r}
-fish <- fish %>% distinct() %>% filter(action == "")
-
-inverts <- inverts %>% 
-  group_by(hakai_id) %>% 
-  summarise_all(list(~ .[!is.na(.)][1])) %>% 
-  relocate(hakai_id, .after = collector) %>%
-  filter(action == "") %>% 
-  as.data.frame()
-```
+# ```{r}
+# fish <- fish %>% distinct() %>% filter(action == "")
+# 
+# inverts <- inverts %>%
+#   group_by(hakai_id) %>%
+#   summarise_all(list(~ .[!is.na(.)][1])) %>%
+#   relocate(hakai_id, .after = collector) %>%
+#   filter(action == "") %>%
+#   as.data.frame()
+# ```
 
 Collection start and end times for 2016 are appearing as 2012, so correct that
 ```{r}
@@ -189,7 +191,7 @@ Size (size_cm) for all siphons should be NA
 inverts$size_cm <- replace(inverts$size_cm, grepl("siphon", inverts$species), NA)
 ```
 
-Convert all blank cells to NA and remove empty columns
+Convert all blank cells to NA and remove NA columns
 ```{r}
 fish <- fish %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
 inverts <- inverts %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
@@ -327,6 +329,14 @@ write.csv(inverts_events_to_QC, "../output/inverts_events_to_QC.csv")
 # Remove temporary data frames from environment
 remove(list = c("events_count", "fish_1survey_missing", "fish_2surveys_missing", "fish_events", "fish_events_check", "fish_too_many_surveys", "inverts_1survey_missing", "inverts_2surveys_missing", "inverts_events", "inverts_events_check", "inverts_too_many_surveys"))
 ```
+### Miscellaneous fixes re: event issues to QC
+```{r}
+# new rows added to 2021 inverts data set on portal via excel file missing collector name; fix that here
+inverts$collector <- replace(inverts$collector, grepl("MGINV48083", inverts$hakai_id), "derek")
+inverts$collector <- replace(inverts$collector, grepl("MGINV48084", inverts$hakai_id), "zach")
+inverts$collector <- replace(inverts$collector, grepl("MGINV48085", inverts$hakai_id), "derek")
+```
+
 
 ***
 
@@ -501,6 +511,12 @@ remove(invertsabunds)
 ***
 
 ## Data output
+
+Everything from 2019-2021 passes event-level QC; add earlier years later once rest of QC is sorted
+```{r}
+fish <- fish %>% filter((year(date) >= 2019))
+inverts <- inverts %>% filter((year(date) >= 2019))
+```
 
 Save into finished, usable data sets
 ```{r}
