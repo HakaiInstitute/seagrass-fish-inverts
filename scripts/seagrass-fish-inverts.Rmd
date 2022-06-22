@@ -512,6 +512,12 @@ remove(invertsabunds)
 
 ## Data output
 
+Everything from 2019-2021 passes event-level QC; add earlier years later once rest of QC is sorted
+```{r}
+fish <- fish %>% filter((year(date) >= 2019))
+inverts <- inverts %>% filter((year(date) >= 2019))
+```
+
 Save into finished, usable data sets
 ```{r}
 write.csv(fish, "../output/seagrass_fish_survey.csv")
