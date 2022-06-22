@@ -329,6 +329,14 @@ write.csv(inverts_events_to_QC, "../output/inverts_events_to_QC.csv")
 # Remove temporary data frames from environment
 remove(list = c("events_count", "fish_1survey_missing", "fish_2surveys_missing", "fish_events", "fish_events_check", "fish_too_many_surveys", "inverts_1survey_missing", "inverts_2surveys_missing", "inverts_events", "inverts_events_check", "inverts_too_many_surveys"))
 ```
+### Miscellaneous fixes re: event issues to QC
+```{r}
+# new rows added to 2021 inverts data set on portal via excel file missing collector name; fix that here
+inverts$collector <- replace(inverts$collector, grepl("MGINV48083", inverts$hakai_id), "derek")
+inverts$collector <- replace(inverts$collector, grepl("MGINV48084", inverts$hakai_id), "zach")
+inverts$collector <- replace(inverts$collector, grepl("MGINV48085", inverts$hakai_id), "derek")
+```
+
 
 ***
 
