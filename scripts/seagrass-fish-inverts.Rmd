@@ -43,9 +43,11 @@ names <- read.csv("../raw-data/seagrass_names.csv")
 namestofix <- read.csv("../raw-data/seagrass_namestofix.csv")
 ```
 
-Remove variables from events that are for portal use only
+Remove variables that are for portal use only
 ```{r}
 events <- subset(events, select = -c(action, samples))
+fish <- subset(fish, select = -action)
+inverts <- subset(inverts, select = -action)
 ```
 
 ***
@@ -55,16 +57,16 @@ events <- subset(events, select = -c(action, samples))
 ### Portal issues fix (these may be removable once the issues are resolved)
 
 Portal issues caused some rows to be added instead of updated (Hakai IDs should not appear more than once), so remove duplicate/extra rows
-```{r}
-fish <- fish %>% distinct() %>% filter(action == "")
-
-inverts <- inverts %>% 
-  group_by(hakai_id) %>% 
-  summarise_all(list(~ .[!is.na(.)][1])) %>% 
-  relocate(hakai_id, .after = collector) %>%
-  filter(action == "") %>% 
-  as.data.frame()
-```
+# ```{r}
+# fish <- fish %>% distinct() %>% filter(action == "")
+# 
+# inverts <- inverts %>%
+#   group_by(hakai_id) %>%
+#   summarise_all(list(~ .[!is.na(.)][1])) %>%
+#   relocate(hakai_id, .after = collector) %>%
+#   filter(action == "") %>%
+#   as.data.frame()
+# ```
 
 Collection start and end times for 2016 are appearing as 2012, so correct that
 ```{r}
@@ -189,7 +191,7 @@ Size (size_cm) for all siphons should be NA
 inverts$size_cm <- replace(inverts$size_cm, grepl("siphon", inverts$species), NA)
 ```
 
-Convert all blank cells to NA and remove empty columns
+Convert all blank cells to NA and remove NA columns
 ```{r}
 fish <- fish %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
 inverts <- inverts %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))

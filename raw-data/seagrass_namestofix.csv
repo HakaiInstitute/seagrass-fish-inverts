@@ -3,53 +3,51 @@ arrow tooth flounder,flounder/arrow_tooth,anemone Painted,anemone/painted,Andrew
 bay goby,goby/bay,astraea,snail/pomaulax,Derek,derek,angeleen;angeleen.olson,angeleen
 bay_pipefish,pipefish/bay,chiton,chiton/unknown,derek.vanmaanen,derek,angeleen;Angeleen;carolyn;Carolyn,"angeleen,carolyn"
 big skate,skate/big,chiton unknown,chiton/unknown,Kyle,kyle,angeleen;Angeleen;carolyn;Carolyn;zach;Zach,"angeleen,carolyn,zach"
-bisk,skate/big,chiton; unknown,chiton/unknown,Ondine,ondine,angeleen;Angeleen;zach;Zach,"angeleen,zach"
-c-o sole,sole/c-o,cockle,siphon/cockle,Other,other,angeleen;carolyn,"angeleen,carolyn"
-cod; other,cod/other,crab cancer,crab/cancer,Zach,zach,Angeleen;Carolyn,"angeleen,carolyn"
-deacon rockfish,rockfish/deacon,crab Dungeness,crab/dungeness,zach.monteith,zach,angeleen;carolyn;krystal,"angeleen,carolyn,krystal"
-english sole,sole/english,crab Hermit,crab/hermit,,,Angeleen;Carolyn;Zach,"angeleen,carolyn,zach"
-enso,sole/english,crab Northern kelp,crab/northern_kelp,,,angeleen;gillian,"angeleen,gillian"
-flounder sole dab,flatfish/soledab,crab Pugettia,crab/pugettia,,,angeleen;gillian;zach,"angeleen,gillian,zach"
-flounder/c-o,sole/c-o,crab Red rock,crab/red_rock,,,angeleen;krystal,"angeleen,krystal"
-flounder/sole_dab,flatfish/soledab,crab unknown,crab/unknown,,,angeleen;other,"angeleen,other"
-goby/blackeyed,goby/bay,crab; pugettia richii,crab/pugettia_richii,,,Angeleen;Zach,"angeleen,zach"
-goby; bay,goby/blackeye,cryptochiton,chiton/gumboot,,,carolyn;faye;krystal,"carolyn,faye,krystal"
-greenling white spotted,greenling/white-spotted,cucumber; stiff-footed,seacucumber/other,,,carolyn;gillian,"carolyn,gillian"
-greenling/white_spotted,greenling/white-spotted,dendronodid nudibranch8,nudibranch/dendronotus,,,carolyn;krystal,"carolyn,krystal"
-pacific sand dab,flounder/pacific_sanddab,deri,seastar/dermasterias,,,Derek,derek
-pacific sanddab,flounder/pacific_sanddab,dire whelk,snail/dire_whelk,,,derek;Derek;kyle;Kyle,"derek,kyle"
-painted greenling,greenling/painted,Evastarias,seastar/evasterias,,,derek;kyle,"derek,kyle"
-pasa,flounder/pacific_sanddab,Evastarious,seastar/evasterias,,,Derek;Kyle,"derek,kyle"
-prickleback; snake,prickleback/snake,gumboot chiton,chiton/gumboot,,,faye;krystal,"faye,krystal"
-rock sole,sole/rock,Idotia,isopod/idotea,,,Gillian,gillian
-rockfish deacon,rockfish/deacon,leptasterias,seastar/leptasterias,,,gillian;gillian.sadlierbrown,gillian
-rockfish decan,rockfish/deacon,lycopodium,seastar/pycnopodia,,,gillian;krystal,"gillian,krystal"
-rockfish declan,rockfish/deacon,Mottled star,seastar/evasterias,,,kyle;zach,"kyle,zach"
-rockfish/black_yellowtail_complex,rockfish/black-yellowtail_complex,Nucella,snail/other,,,Zach,zach
-rockfish/boccaccio,rockfish/bocaccio,nudibranch Melabie,nudibranch/melibe,,,zach;Zach,zach
+c-o sole,sole/c-o,cockle,siphon/cockle,Ondine,ondine,angeleen;Angeleen;zach;Zach,"angeleen,zach"
+cod Cod; other,cod/other,crab cancer,crab/cancer,Other,other,angeleen;carolyn,"angeleen,carolyn"
+cod; other,cod/other,crab Dungeness,crab/dungeness,Zach,zach,angeleen;carolyn;krystal,"angeleen,carolyn,krystal"
+deacon rockfish,rockfish/deacon,crab Hermit,crab/hermit,zach.monteith,zach,angeleen;gillian,"angeleen,gillian"
+english sole,sole/english,crab Northern kelp,crab/northern_kelp,,,angeleen;gillian;zach,"angeleen,gillian,zach"
+enso,sole/english,crab Pugettia,crab/pugettia,,,angeleen;krystal,"angeleen,krystal"
+flounder sole dab,flatfish/soledab,crab pugettia richii,crab/pugettia_richii,,,angeleen;other,"angeleen,other"
+flounder/c-o,sole/c-o,crab Red rock,crab/red_rock,,,carolyn;faye;krystal,"carolyn,faye,krystal"
+flounder/sole_dab,flatfish/soledab,crab unknown,crab/unknown,,,carolyn;gillian,"carolyn,gillian"
+goby bay,goby/bay,cryptochiton,chiton/gumboot,,,carolyn;krystal,"carolyn,krystal"
+goby/blackeyed,goby/blackeye,cucumber stiff-footed,seacucumber/other,,,Derek,derek
+greenling white spotted,greenling/white-spotted,dendronodid nudibranch8,nudibranch/dendronotus,,,derek;Derek;kyle;Kyle,"derek,kyle"
+greenling/white_spotted,greenling/white-spotted,deri,seastar/dermasterias,,,derek;kyle,"derek,kyle"
+pacific sand dab,flounder/pacific_sanddab,dire whelk,snail/dire_whelk,,,faye;krystal,"faye,krystal"
+pacific sanddab,flounder/pacific_sanddab,Evastarias,seastar/evasterias,,,Gillian,gillian
+painted greenling,greenling/painted,Evastarious,seastar/evasterias,,,gillian;gillian.sadlierbrown,gillian
+pasa,flounder/pacific_sanddab,gumboot chiton,chiton/gumboot,,,gillian;krystal,"gillian,krystal"
+prickleback snake,prickleback/snake,Idotia,isopod/idotea,,,kyle;zach,"kyle,zach"
+rock sole,sole/rock,leptasterias,seastar/leptasterias,,,zach;Zach,zach
+rockfish deacon,rockfish/deacon,lycopodium,seastar/pycnopodia,,,,
+rockfish decan,rockfish/deacon,Mottled star,seastar/evasterias,,,,
+rockfish declan,rockfish/deacon,Nucella,snail/other,,,,
+rockfish/black_yellowtail_complex,rockfish/black-yellowtail_complex,nudibranch janalus fuscus,nudibranch/other,,,,
+rockfish/boccaccio,rockfish/bocaccio,nudibranch Melabie,nudibranch/melibe,,,,
 rockfish; deacon,rockfish/deacon,nudibranch unknown,nudibranch/unknown,,,,
 sand sole,sole/sand,nudibranch/melabie,nudibranch/melibe,,,,
-sanddab; pacific,flounder/pacific_sanddab,nudibranch; janalus fuscus,nudibranch/other,,,,
-skate,skate/unknown,paga,crab/hermit,,,,
-sole,sole/unknown,pagarus,crab/hermit,,,,
-sole; english,sole/english,phyllaplysia,seahare/phyllaplysia_taylori,,,,
-sole; unknown,sole/unknown,pisaster ochraceas,seastar/pisaster_ochraceus,,,,
-soledad,flatfish/soledab,pomalocks,snail/pomaulax,,,,
-stickleback,threespine_stickleback,pomelo,snail/pomaulax,,,,
-stickleback; threespine,threespine_stickleback,pomolox,snail/pomaulax,,,,
-three spine stickleback (thst),threespine_stickleback,pugettia richii,crab/pugettia_richii,,,,
-threespine stickleback,threespine_stickleback,Purple olive,snail/purple_olive,,,,
-threespine stickleback010,threespine_stickleback,purple olive snail,snail/purple_olive,,,,
-unknown cod,cod/unknown,purple velvet clam,clam/purple_velvet,,,,
-unknown flat,flatfish/unknown,sand dollar,urchin/sand_dollar,,,,
-unknown flatfish,flatfish/unknown,sea cucumber,seacucumber/other,,,,
-unknown; cod,cod/unknown,sea star; dermasterias imbricata,seastar/dermasterias,,,,
-vermillion rockfish,rockfish/vermillion,seapen,seapen/orange,,,,
-white-spotted greenling,greenling/white-spotted,seastar Dermasterias,seastar/dermasterias,,,,
-white spotted greenling,greenling/white-spotted,seastar Pycnopodia,seastar/pycnopodia,,,,
-,,seastar; dermasterias imbricata,seastar/dermasterias,,,,
-,,Segmented worm,worm/unknown,,,,
-,,shrimp; pandalus,shrimp/pandalus,,,,
+sanddab pacific,flounder/pacific_sanddab,paga,crab/hermit,,,,
+skate,skate/unknown,pagarus,crab/hermit,,,,
+sole,sole/unknown,pisaster ochraceas,seastar/pisaster_ochraceus,,,,
+sole english,sole/english,pomalocks,snail/pomaulax,,,,
+sole unknown,sole/unknown,pomelo,snail/pomaulax,,,,
+soledad,flatfish/soledab,pomolox,snail/pomaulax,,,,
+stickleback,threespine_stickleback,pugettia richii,crab/pugettia_richii,,,,
+stickleback threespine,threespine_stickleback,Purple olive,snail/purple_olive,,,,
+three spine stickleback (thst),threespine_stickleback,purple olive snail,snail/purple_olive,,,,
+threespine stickleback,threespine_stickleback,purple velvet clam,clam/purple_velvet,,,,
+threespine stickleback010,threespine_stickleback,sand dollar,urchin/sand_dollar,,,,
+unknown cod,cod/unknown,sea cucumber,seacucumber/other,,,,
+unknown flat,flatfish/unknown,sea star; dermasterias imbricata,seastar/dermasterias,,,,
+unknown flatfish,flatfish/unknown,seapen,seapen/orange,,,,
+unknown; cod,cod/unknown,seastar Dermasterias,seastar/dermasterias,,,,
+vermillion rockfish,rockfish/vermillion,seastar dermasterias imbricata,seastar/dermasterias,,,,
+white-spotted greenling,greenling/white-spotted,seastar Pycnopodia,seastar/pycnopodia,,,,
+white spotted greenling,greenling/white-spotted,Segmented worm,worm/unknown,,,,
+,,shrimp pandalus,shrimp/pandalus,,,,
 ,,siphon Geoduck,siphon/geoduck,,,,
 ,,siphon Horse clam,siphon/horse_clam,,,,
 ,,siphon unknown,siphon/unknown,,,,
