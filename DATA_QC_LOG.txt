@@ -3,7 +3,7 @@ All notable data quality control measures will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). 
 
-## [v1.0.0] - 2022-07-TBD
+## [v1.0.0] - 2022-06-23
 ### Notes ###
 - This is a first attempt at keeping a data QC log in this format. 
 
@@ -11,7 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Checked completeness of fish and invertebrate datasets by aggregating data to event level and cross-referencing with events loaded from EIMS Hakai Data Portal to ensure that all site visits were included (note that for each event there should be two fish surveys and two invertebrate surveys, with the exception of Goose SouthEast, McMullin South, and Triquet North sites, where there should be zero fish and zero invertebrate surveys for 2018 onwards)
 - Corrected all instances in both fish and invertebrate datasets where multiple names were used to refer to the same thing for "species", "collector", and "dive_supervisor"
 - Corrected various misspellings in both fish and invertebrate datasets
+- Converted all blank cells to NA and removed columns with all NA data
 - Corrected "size_cm" for all siphonophores in invertebrate dataset to NA
+- Corrected discrepancies between "date" and "collected_start"/"collected_end" variables 
 - Appended Hakai Quality Flag variable for lengths/sizes and abundances for both fish and invertebrate datasets, as follows:
 	- AV (Accepted Value) for all values within the mean +/- 2 standard deviations (95% of data)
 	- SVC (Suspicious value - caution) for all values within the mean +/- 2.5 standard deviations (99% of data), not including values already deemed AV

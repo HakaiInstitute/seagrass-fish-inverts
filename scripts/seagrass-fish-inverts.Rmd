@@ -54,27 +54,25 @@ inverts <- subset(inverts, select = -action)
 
 ## Data Cleaning
 
-### Portal issues fix (these may be removable once the issues are resolved)
+### Portal issues fix (these may be removed once the issues are resolved)
 
 Portal issues caused some rows to be added instead of updated (Hakai IDs should not appear more than once), so remove duplicate/extra rows
-# ```{r}
+```{r}
 # fish <- fish %>% distinct() %>% filter(action == "")
-# 
+#  
 # inverts <- inverts %>%
-#   group_by(hakai_id) %>%
-#   summarise_all(list(~ .[!is.na(.)][1])) %>%
-#   relocate(hakai_id, .after = collector) %>%
-#   filter(action == "") %>%
-#   as.data.frame()
-# ```
+#  group_by(hakai_id) %>%
+#  summarise_all(list(~ .[!is.na(.)][1])) %>%
+#  relocate(hakai_id, .after = collector) %>%
+#  filter(action == "") %>%
+# as.data.frame()
+```
 
-Collection start and end times for 2016 are appearing as 2012, so correct that
+Collected_start/end times for 2016 are appearing as 2012, so correct that
 ```{r}
 fish$collected_start <- gsub("2012", "2016", fish$collected_start)
 fish$collected_end <- gsub("2012", "2016", fish$collected_end)
 ```
-
-Note: may need to enter QC step to check that date, collected_start, and collected_end all match; date is easily misentered when forms are set up ahead of time, so collected_start/end typically contain the correct date
 
 ### Fixing names
 
@@ -191,10 +189,25 @@ Size (size_cm) for all siphons should be NA
 inverts$size_cm <- replace(inverts$size_cm, grepl("siphon", inverts$species), NA)
 ```
 
-Convert all blank cells to NA and remove NA columns
+Convert all blank cells to NA and remove columns with all NA data
 ```{r}
 fish <- fish %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
 inverts <- inverts %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
+```
+
+Check for discrepancies between date and collected_start/end (collected_start/end typically contain the correct date, but important to check for entering mistakes):
+```{r}
+fish$datecheck <- as.Date(fish$collected_start) %>% as.character()
+fishdatecheck <- fish %>% filter(date != datecheck)
+fish$date <- fish$datecheck # 2019-2021 confirmed that collected_start/end contain correct dates, still need to check other dates
+fish <- subset(fish, select = -datecheck)
+remove(fishdatecheck)
+
+inverts$datecheck <- as.Date(inverts$collected_start) %>% as.character()
+invertsdatecheck <- inverts %>% filter(date != datecheck)
+inverts$date <- inverts$datecheck # 2019-2021 confirmed that collected_start/end contain correct dates, still need to check other dates
+inverts <- subset(inverts, select = -datecheck)
+remove(invertsdatecheck)
 ```
 
 ***
@@ -329,14 +342,15 @@ write.csv(inverts_events_to_QC, "../output/inverts_events_to_QC.csv")
 # Remove temporary data frames from environment
 remove(list = c("events_count", "fish_1survey_missing", "fish_2surveys_missing", "fish_events", "fish_events_check", "fish_too_many_surveys", "inverts_1survey_missing", "inverts_2surveys_missing", "inverts_events", "inverts_events_check", "inverts_too_many_surveys"))
 ```
+
 ### Miscellaneous fixes re: event issues to QC
+
+New rows added to 2021 inverts data set on portal via excel file missing collector name; fix that here
 ```{r}
-# new rows added to 2021 inverts data set on portal via excel file missing collector name; fix that here
 inverts$collector <- replace(inverts$collector, grepl("MGINV48083", inverts$hakai_id), "derek")
 inverts$collector <- replace(inverts$collector, grepl("MGINV48084", inverts$hakai_id), "zach")
 inverts$collector <- replace(inverts$collector, grepl("MGINV48085", inverts$hakai_id), "derek")
 ```
-
 
 ***
 
