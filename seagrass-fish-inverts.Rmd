@@ -36,18 +36,29 @@ lapply(c("tidyverse",
 
 Load data
 ```{r}
-fish <- read.csv("../raw-data/seagrass_fish.csv")
-inverts <- read.csv("../raw-data/seagrass_inverts.csv")
-events <- read.csv("../raw-data/seagrass_events.csv")
-names <- read.csv("../raw-data/seagrass_names.csv")
-namestofix <- read.csv("../raw-data/seagrass_namestofix.csv")
+fish <- read.csv("./raw-data/seagrass_fish.csv")
+inverts <- read.csv("./raw-data/seagrass_inverts.csv")
+events <- read.csv("./raw-data/seagrass_events.csv")
+names <- read.csv("./raw-data/seagrass_names.csv")
+namestofix <- read.csv("./raw-data/seagrass_namestofix.csv")
 ```
 
-Remove variables that are for portal use only
+Remove empty columns
 ```{r}
-events <- subset(events, select = -c(action, samples))
-fish <- subset(fish, select = -action)
-inverts <- subset(inverts, select = -action)
+events <- events %>% discard(~all(is.na(.) | . ==""))
+fish <- fish %>% discard(~all(is.na(.) | . ==""))
+inverts <- inverts %>% discard(~all(is.na(.) | . ==""))
+```
+
+Tidy variable names
+```{r warning=FALSE}
+fish <-  rename_with(fish, tolower)
+colnames(fish) <- gsub("\\.", "_", colnames(fish))
+names(fish)[names(fish) == "length__cm_"] <- "length_cm"
+
+inverts <-  rename_with(inverts, tolower)
+colnames(inverts) <- gsub("\\.", "_", colnames(inverts))
+names(inverts)[names(inverts) == "size__cm_"] <- "size_cm"
 ```
 
 ***
