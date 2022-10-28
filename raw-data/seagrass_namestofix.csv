@@ -1,11 +1,11 @@
 fish_name,fish_replace,inverts_name,inverts_replace,divers_name,divers_replace,techs_name,techs_replace
-arrow tooth flounder,flounder/arrow_tooth,anemone Painted,anemone/painted,Andrew,andrew,angeleen.olson;carolyn;krystal,"angeleen,carolyn,krystal"
-bay goby,goby/bay,astraea,snail/pomaulax,Derek,derek,angeleen;angeleen.olson,angeleen
-bay_pipefish,pipefish/bay,chiton,chiton/unknown,derek.vanmaanen,derek,angeleen;Angeleen;carolyn;Carolyn,"angeleen,carolyn"
-big skate,skate/big,chiton unknown,chiton/unknown,Kyle,kyle,angeleen;Angeleen;carolyn;Carolyn;zach;Zach,"angeleen,carolyn,zach"
-c-o sole,sole/c-o,cockle,siphon/cockle,Ondine,ondine,angeleen;Angeleen;zach;Zach,"angeleen,zach"
-cod Cod; other,cod/other,crab cancer,crab/cancer,Other,other,angeleen;carolyn,"angeleen,carolyn"
-cod; other,cod/other,crab Dungeness,crab/dungeness,Zach,zach,angeleen;carolyn;krystal,"angeleen,carolyn,krystal"
+arrow tooth flounder,flounder/arrow_tooth,anemone Painted,anemone/painted,Andrew,andrew,"angeleen.olson,carolyn,krystal","angeleen,carolyn,krystal"
+bay goby,goby/bay,astraea,snail/pomaulax,Derek,derek,"angeleen,angeleen.olson",angeleen
+bay_pipefish,pipefish/bay,chiton,chiton/unknown,derek.vanmaanen,derek,"angeleen,Angeleen,carolyn,Carolyn","angeleen,carolyn"
+big skate,skate/big,chiton unknown,chiton/unknown,Kyle,kyle,"angeleen,Angeleen,carolyn,Carolyn,zach,Zach","angeleen,carolyn,zach"
+c-o sole,sole/c-o,cockle,siphon/cockle,Ondine,ondine,"angeleen,Angeleen,zach,Zach","angeleen,zach"
+"cod Cod, other",cod/other,crab cancer,crab/cancer,Other,other,angeleen;carolyn,"angeleen,carolyn"
+"cod, other",cod/other,crab Dungeness,crab/dungeness,Zach,zach,angeleen;carolyn;krystal,"angeleen,carolyn,krystal"
 deacon rockfish,rockfish/deacon,crab Hermit,crab/hermit,zach.monteith,zach,angeleen;gillian,"angeleen,gillian"
 english sole,sole/english,crab Northern kelp,crab/northern_kelp,,,angeleen;gillian;zach,"angeleen,gillian,zach"
 enso,sole/english,crab Pugettia,crab/pugettia,,,angeleen;krystal,"angeleen,krystal"
@@ -15,22 +15,22 @@ flounder/sole_dab,flatfish/soledab,crab Red rock,crab/red_rock,,,carolyn;faye;kr
 goby bay,goby/bay,crab unknown,crab/unknown,,,carolyn;gillian,"carolyn,gillian"
 goby/blackeyed,goby/blackeye,cryptochiton,chiton/gumboot,,,carolyn;krystal,"carolyn,krystal"
 greenling white spotted,greenling/white-spotted,cucumber stiff-footed,seacucumber/other,,,Derek,derek
-greenling/white_spotted,greenling/white-spotted,dendronodid nudibranch8,nudibranch/dendronotus,,,derek;Derek;kyle;Kyle,"derek,kyle"
+greenling/white_spotted,greenling/white-spotted,dendronodid nudibranch8,nudibranch/dendronotus,,,"derek,Derek,kyle,Kyle","derek,kyle"
 pacific sand dab,flounder/pacific_sanddab,deri,seastar/dermasterias,,,derek;kyle,"derek,kyle"
 pacific sanddab,flounder/pacific_sanddab,dire whelk,snail/dire_whelk,,,faye;krystal,"faye,krystal"
 painted greenling,greenling/painted,Evastarias,seastar/evasterias,,,faye;krystal;other,"faye,krystal,other"
 pasa,flounder/pacific_sanddab,Evastarious,seastar/evasterias,,,Gillian,gillian
-perch unknown,perch/unknown,gumboot chiton,chiton/gumboot,,,gillian;gillian.sadlierbrown,gillian
+perch unknown,perch/unknown,gumboot chiton,chiton/gumboot,,,"gillian,gillian.sadlierbrown",gillian
 poacher,sculpin/poacher,Idotia,isopod/idotea,,,gillian;krystal,"gillian,krystal"
 prickleback snake,prickleback/snake,leptasterias,seastar/leptasterias,,,kyle;zach,"kyle,zach"
-rock sole,sole/rock,lycopodium,seastar/pycnopodia,,,zach;Zach,zach
+rock sole,sole/rock,lycopodium,seastar/pycnopodia,,,"zach,Zach",zach
 rockfish deacon,rockfish/deacon,Mottled star,seastar/evasterias,,,,
 rockfish decan,rockfish/deacon,Nucella,snail/other,,,,
 rockfish declan,rockfish/deacon,nudibranch janalus fuscus,nudibranch/other,,,,
 rockfish vermillion,rockfish/vermillion,nudibranch Melabie,nudibranch/melibe,,,,
 rockfish/black_yellowtail_complex,rockfish/black-yellowtail_complex,nudibranch unknown,nudibranch/unknown,,,,
 rockfish/boccaccio,rockfish/bocaccio,nudibranch/melabie,nudibranch/melibe,,,,
-rockfish; deacon,rockfish/deacon,paga,crab/hermit,,,,
+"rockfish, deacon",rockfish/deacon,paga,crab/hermit,,,,
 sand sole,sole/sand,pagarus,crab/hermit,,,,
 sanddab pacific,flounder/pacific_sanddab,pisaster ochraceas,seastar/pisaster_ochraceus,,,,
 skate,skate/unknown,pomalocks,snail/pomaulax,,,,
@@ -45,8 +45,8 @@ threespine stickleback,threespine_stickleback,sea cucumber,seacucumber/other,,,,
 threespine stickleback010,threespine_stickleback,seacucumber/unknown,seacucumber/other,,,,
 unknown cod,cod/unknown,seacucumber california,seacucumber/california,,,,
 unknown flat,flatfish/unknown,sea hare phyloplasia,seahare/phyllaplysia_taylori,,,,
-unknown flatfish,flatfish/unknown,sea star; dermasterias imbricata,seastar/dermasterias,,,,
-unknown; cod,cod/unknown,seapen,seapen/orange,,,,
+unknown flatfish,flatfish/unknown,"sea star, dermasterias imbricata",seastar/dermasterias,,,,
+"unknown, cod",cod/unknown,seapen,seapen/orange,,,,
 vermillion rockfish,rockfish/vermillion,seastar Dermasterias,seastar/dermasterias,,,,
 white-spotted greenling,greenling/white-spotted,seastar dermasterias imbricata,seastar/dermasterias,,,,
 white spotted greenling,greenling/white-spotted,seastar Pycnopodia,seastar/pycnopodia,,,,

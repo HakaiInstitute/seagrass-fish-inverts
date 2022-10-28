@@ -52,6 +52,9 @@ inverts <- inverts %>% discard(~all(is.na(.) | . ==""))
 
 Tidy variable names
 ```{r warning=FALSE}
+events <-  rename_with(events, tolower)
+colnames(events) <- gsub("\\.", "_", colnames(events))
+
 fish <-  rename_with(fish, tolower)
 colnames(fish) <- gsub("\\.", "_", colnames(fish))
 names(fish)[names(fish) == "length__cm_"] <- "length_cm"
@@ -74,7 +77,7 @@ Portal issues caused some rows to be added instead of updated (Hakai IDs should 
 # inverts <- inverts %>%
 #  group_by(hakai_id) %>%
 #  summarise_all(list(~ .[!is.na(.)][1])) %>%
-#  relocate(hakai_id, .after = collector) %>%
+#  relocate(hakai_id, .after = surveyor) %>%
 #  filter(action == "") %>%
 # as.data.frame()
 ```
@@ -131,27 +134,27 @@ fish$species[fish$species == "three spine stickleback (thst)"] <- "threespine_st
 
 #### Fixing names: Divers 
 
-Fix diver names (i.e. collectors) in both data sets so there aren't multiple names for the same person
+Fix diver names (i.e. surveyors) in both data sets so there aren't multiple names for the same person
 ```{r}
 # replacement using FindReplace
-fish <- FindReplace(fish, "collector", namestofix, from = "divers_name", to = "divers_replace", exact = TRUE, vector = FALSE)
-inverts <- FindReplace(inverts, "collector", namestofix, from = "divers_name", to = "divers_replace", exact = TRUE, vector = FALSE)
+fish <- FindReplace(fish, "surveyor", namestofix, from = "divers_name", to = "divers_replace", exact = TRUE, vector = FALSE)
+inverts <- FindReplace(inverts, "surveyor", namestofix, from = "divers_name", to = "divers_replace", exact = TRUE, vector = FALSE)
 ```
 
 Use this code to check for anything that didn't work; update "namestofix.csv" and rerun if needed
 ```{r}
-# import list of acceptable collector names
+# import list of acceptable surveyor names
 diversnames_good <- names$divers %>% data.frame
 colnames(diversnames_good) <- "name"
 
-# create list of collector names in fish data that need fixing
-diversnames_tofix_fish <- unique(fish$collector) %>% sort %>% data.frame
+# create list of surveyor names in fish data that need fixing
+diversnames_tofix_fish <- unique(fish$surveyor) %>% sort %>% data.frame
 colnames(diversnames_tofix_fish) <- "name"
 diversnames_tofix_fish <- anti_join(diversnames_tofix_fish, diversnames_good)
 diversnames_tofix_fish <- filter(diversnames_tofix_fish, name != "no_obs")
 
 # create list of inverts names in inverts data that need fixing
-diversnames_tofix_inverts <- unique(inverts$collector) %>% sort %>% data.frame
+diversnames_tofix_inverts <- unique(inverts$surveyor) %>% sort %>% data.frame
 colnames(diversnames_tofix_inverts) <- "name"
 diversnames_tofix_inverts <- anti_join(diversnames_tofix_inverts, diversnames_good)
 diversnames_tofix_inverts <- filter(diversnames_tofix_inverts, name != "no_obs")
@@ -172,11 +175,11 @@ inverts <- FindReplace(inverts, "dive_supervisor", namestofix, from = "techs_nam
 
 Use this code to check for anything that didn't work; update "namestofix.csv" and rerun if needed
 ```{r}
-# import list of acceptable collector names
+# import list of acceptable surveyor names
 techsnames_good <- names$techs %>% data.frame
 colnames(techsnames_good) <- "name"
 
-# create list of collector names in fish data that need fixing
+# create list of surveyor names in fish data that need fixing
 techsnames_tofix_fish <- unique(fish$dive_supervisor) %>% sort %>% data.frame
 colnames(techsnames_tofix_fish) <- "name"
 techsnames_tofix_fish <- anti_join(techsnames_tofix_fish, techsnames_good)
@@ -208,15 +211,15 @@ inverts <- inverts %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
 
 Check for discrepancies between date and collected_start/end (collected_start/end typically contain the correct date, but important to check for entering mistakes):
 ```{r}
-fish$datecheck <- as.Date(fish$collected_start) %>% as.character()
+fish$datecheck <- as.Date(fish$collected_start, "%m/%d/%Y %H:%M") %>% as.character()
 fishdatecheck <- fish %>% filter(date != datecheck)
-fish$date <- fish$datecheck # 2019-2021 confirmed that collected_start/end contain correct dates, still need to check other dates
+fish$date <- fish$datecheck # 2019-2022 confirmed that collected_start/end contain correct dates, still need to check other dates
 fish <- subset(fish, select = -datecheck)
 remove(fishdatecheck)
 
-inverts$datecheck <- as.Date(inverts$collected_start) %>% as.character()
+inverts$datecheck <- as.Date(inverts$collected_start, "%m/%d/%Y %H:%M") %>% as.character()
 invertsdatecheck <- inverts %>% filter(date != datecheck)
-inverts$date <- inverts$datecheck # 2019-2021 confirmed that collected_start/end contain correct dates, still need to check other dates
+inverts$date <- inverts$datecheck # 2019-2022 confirmed that collected_start/end contain correct dates, still need to check other dates
 inverts <- subset(inverts, select = -datecheck)
 remove(invertsdatecheck)
 ```
@@ -239,7 +242,7 @@ fish surveys, and two invertebrate surveys.
 # aggregate fish to event level
 fish_events <-
   fish %>%
-  group_by(date, survey, site_id, collector, collected_start) %>%
+  group_by(date, survey, site_id, surveyor, collected_start) %>%
   summarise(n_species_obs = n()) %>%
   ungroup() %>%
   group_by(date, survey, site_id) %>%
@@ -248,7 +251,7 @@ fish_events <-
 # aggregate inverts to event level
 inverts_events <-
   inverts %>%
-  group_by(date, survey, site_id, collector, collected_start) %>%
+  group_by(date, survey, site_id, surveyor, collected_start) %>%
   summarise(n_species_obs = n()) %>%
   ungroup() %>%
   group_by(date, survey, site_id) %>%
@@ -347,8 +350,8 @@ inverts_events_to_QC <-
                  !(year(date) >= 2018 & survey =="TRIQUET_BAY"))
 
 ## Save `fish_events_to_QC` and `inverts_events_to_QC` to .csv:
-write.csv(fish_events_to_QC, "../output/fish_events_to_QC.csv")
-write.csv(inverts_events_to_QC, "../output/inverts_events_to_QC.csv")
+write.csv(fish_events_to_QC, "./output/fish_events_to_QC.csv")
+write.csv(inverts_events_to_QC, "./output/inverts_events_to_QC.csv")
 
 # Remove temporary data frames from environment
 remove(list = c("events_count", "fish_1survey_missing", "fish_2surveys_missing", "fish_events", "fish_events_check", "fish_too_many_surveys", "inverts_1survey_missing", "inverts_2surveys_missing", "inverts_events", "inverts_events_check", "inverts_too_many_surveys"))
@@ -356,11 +359,11 @@ remove(list = c("events_count", "fish_1survey_missing", "fish_2surveys_missing",
 
 ### Miscellaneous fixes re: event issues to QC
 
-New rows added to 2021 inverts data set on portal via excel file missing collector name; fix that here
+New rows added to 2021 inverts data set on portal via excel file missing surveyor name; fix that here
 ```{r}
-inverts$collector <- replace(inverts$collector, grepl("MGINV48083", inverts$hakai_id), "derek")
-inverts$collector <- replace(inverts$collector, grepl("MGINV48084", inverts$hakai_id), "zach")
-inverts$collector <- replace(inverts$collector, grepl("MGINV48085", inverts$hakai_id), "derek")
+inverts$surveyor <- replace(inverts$surveyor, grepl("MGINV48083", inverts$hakai_id), "derek")
+inverts$surveyor <- replace(inverts$surveyor, grepl("MGINV48084", inverts$hakai_id), "zach")
+inverts$surveyor <- replace(inverts$surveyor, grepl("MGINV48085", inverts$hakai_id), "derek")
 ```
 
 ***
@@ -416,10 +419,10 @@ remove(fishlengths)
 
 Check fish abundances for suspicious values:
 ```{r}
-# note that for abundance, we'll want to group quantity by species and transects (i.e. unique combos of site_id, date, and collector) to look at average quantity per transect
+# note that for abundance, we'll want to group quantity by species and transects (i.e. unique combos of site_id, date, and surveyor) to look at average quantity per transect
 
-# create new variable for transect, merging site_id, date, and collector together
-fish$transect <- paste(fish$site_id, fish$date, fish$collector, sep = "_")
+# create new variable for transect, merging site_id, date, and surveyor together
+fish$transect <- paste(fish$site_id, fish$date, fish$surveyor, sep = "_")
 
 # create working fish length data frame with just relevant data, including mean and SD
 fishabunds <- fish %>%
@@ -499,10 +502,10 @@ remove(invertssizes)
 
 Check inverts abundances for suspicious values:
 ```{r}
-# note that for abundance, we'll want to group quantity by species and transects (i.e. unique combos of site_id, date, and collector) to look at average quantity per transect
+# note that for abundance, we'll want to group quantity by species and transects (i.e. unique combos of site_id, date, and surveyor) to look at average quantity per transect
 
-# create new variable for transect, merging site_id, date, and collector together
-inverts$transect <- paste(inverts$site_id, inverts$date, inverts$collector, sep = "_")
+# create new variable for transect, merging site_id, date, and surveyor together
+inverts$transect <- paste(inverts$site_id, inverts$date, inverts$surveyor, sep = "_")
 
 # create working inverts length data frame with just relevant data, including mean and SD
 invertsabunds <- inverts %>%
@@ -537,7 +540,7 @@ remove(invertsabunds)
 
 ## Data output
 
-Everything from 2019-2021 passes event-level QC; add earlier years later once rest of QC is sorted
+Everything from 2019-2022 passes event-level QC; add earlier years later once rest of QC is sorted
 ```{r}
 fish <- fish %>% filter((year(date) >= 2019))
 inverts <- inverts %>% filter((year(date) >= 2019))
@@ -545,6 +548,6 @@ inverts <- inverts %>% filter((year(date) >= 2019))
 
 Save into finished, usable data sets
 ```{r}
-write.csv(fish, "../output/seagrass_fish_survey.csv")
-write.csv(inverts,"../output/seagrass_inverts_survey.csv")
+write.csv(fish, "./output/seagrass_fish_survey.csv")
+write.csv(inverts,"./output/seagrass_inverts_survey.csv")
 ````
