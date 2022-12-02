@@ -1,5 +1,4 @@
 Table,Variable Name,Units or Categories,Description
-"fish, inverts",,NA,unique identifiers
 "fish, inverts",organization,categorical,organization by which data were collected
 "fish, inverts",work_area,categorical,larger region within which data were collected 
 "fish, inverts",project,categorical,umbrella project under which data were collected

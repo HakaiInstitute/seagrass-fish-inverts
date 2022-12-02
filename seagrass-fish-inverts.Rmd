@@ -43,24 +43,19 @@ names <- read.csv("./raw-data/seagrass_names.csv")
 namestofix <- read.csv("./raw-data/seagrass_namestofix.csv")
 ```
 
-Remove empty columns
+Tidy column names
 ```{r}
-events <- events %>% discard(~all(is.na(.) | . ==""))
-fish <- fish %>% discard(~all(is.na(.) | . ==""))
-inverts <- inverts %>% discard(~all(is.na(.) | . ==""))
-```
-
-Tidy variable names
-```{r warning=FALSE}
-events <-  rename_with(events, tolower)
+events <- rename_with(events, tolower)
 colnames(events) <- gsub("\\.", "_", colnames(events))
 
 fish <-  rename_with(fish, tolower)
 colnames(fish) <- gsub("\\.", "_", colnames(fish))
+names(fish)[names(fish) == "transect_dist__m_"] <- "transect_dist_m"
 names(fish)[names(fish) == "length__cm_"] <- "length_cm"
 
 inverts <-  rename_with(inverts, tolower)
 colnames(inverts) <- gsub("\\.", "_", colnames(inverts))
+names(inverts)[names(inverts) == "transect_dist__m_"] <- "transect_dist_m"
 names(inverts)[names(inverts) == "size__cm_"] <- "size_cm"
 ```
 
@@ -209,21 +204,6 @@ fish <- fish %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
 inverts <- inverts %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
 ```
 
-Check for discrepancies between date and collected_start/end (collected_start/end typically contain the correct date, but important to check for entering mistakes):
-```{r}
-fish$datecheck <- as.Date(fish$collected_start, "%m/%d/%Y %H:%M") %>% as.character()
-fishdatecheck <- fish %>% filter(date != datecheck)
-fish$date <- fish$datecheck # 2019-2022 confirmed that collected_start/end contain correct dates, still need to check other dates
-fish <- subset(fish, select = -datecheck)
-remove(fishdatecheck)
-
-inverts$datecheck <- as.Date(inverts$collected_start, "%m/%d/%Y %H:%M") %>% as.character()
-invertsdatecheck <- inverts %>% filter(date != datecheck)
-inverts$date <- inverts$datecheck # 2019-2022 confirmed that collected_start/end contain correct dates, still need to check other dates
-inverts <- subset(inverts, select = -datecheck)
-remove(invertsdatecheck)
-```
-
 ***
 
 ## Data Quality Check
@@ -357,7 +337,23 @@ write.csv(inverts_events_to_QC, "./output/inverts_events_to_QC.csv")
 remove(list = c("events_count", "fish_1survey_missing", "fish_2surveys_missing", "fish_events", "fish_events_check", "fish_too_many_surveys", "inverts_1survey_missing", "inverts_2surveys_missing", "inverts_events", "inverts_events_check", "inverts_too_many_surveys"))
 ```
 
-### Miscellaneous fixes re: event issues to QC
+### Mmore miscellaneous fixes 
+
+Check for discrepancies between date and collected_start/end (collected_start/end typically contain the correct date, but important to check for entering mistakes). 
+Since some event dates are incorrect, replace "date" with collected_start/end date here:
+```{r}
+fish$datecheck <- as.Date(fish$collected_start) %>% as.character()
+fishdatecheck <- fish %>% filter(date != datecheck)
+fish$date <- fish$datecheck # 2019-2022 confirmed that collected_start/end contain correct dates, still need to check other dates
+fish <- subset(fish, select = -datecheck)
+remove(fishdatecheck)
+
+inverts$datecheck <- as.Date(inverts$collected_start) %>% as.character()
+invertsdatecheck <- inverts %>% filter(date != datecheck)
+inverts$date <- inverts$datecheck # 2019-2021 confirmed that collected_start/end contain correct dates, still need to check other dates
+inverts <- subset(inverts, select = -datecheck)
+remove(invertsdatecheck)
+```
 
 New rows added to 2021 inverts data set on portal via excel file missing surveyor name; fix that here
 ```{r}
@@ -540,7 +536,7 @@ remove(invertsabunds)
 
 ## Data output
 
-Everything from 2019-2022 passes event-level QC; add earlier years later once rest of QC is sorted
+Everything from 2019-2021 passes event-level QC; add earlier years later once rest of QC is sorted
 ```{r}
 fish <- fish %>% filter((year(date) >= 2019))
 inverts <- inverts %>% filter((year(date) >= 2019))
