@@ -3,12 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.0] - 2022-12-02
+### Notes ###
+- This is the second release of the Seagrass Fish & Macroinvertebrate Diversity and Abundance dataset, currently containing data from 2019 to 2022. 
+- An update (date TBD) will include data from 2016-2018, once the quality control process is complete. 
+- A second update (date TBD) will include 2015 data, once it has been uploaded to the Hakai Data Portal. 
+### Changed ###
+- README.txt as read me file for new package users
+- CHANGELOG.txt to track future changes to this project
+- DATA_QC_LOG.txt to track data quality control measures taken on this project
+- Copy of Hakai Institute Metadata Form - Research Catalogue and Data Packaging Guide
+- seagrass_fish_survey.csv containing fish survey data from 2019-2022
+- seagrass_inverts_survey.csv containing inverts survey data from 2019-2022
+
 ## [v1.0.0] - 2022-06-23
 ### Notes ###
 - This is the initial release of the Seagrass Fish & Macroinvertebrate Diversity and Abundance dataset, currently containing data from 2019 to 2021. 
 - An update (date TBD) will include data from 2016-2018, once the quality control process is complete. 
 - A second update (date TBD) will include 2015 data, once it has been uploaded to the Hakai Data Portal. 
-
 ### Added ###
 - README.txt as read me file for new package users
 - LICENSE.txt as license used for this project (CC-BY 4.0)
@@ -16,5 +28,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - DATA_QC_LOG.txt to track data quality control measures taken on this project
 - Hakai Seagrass Protocol for in-depth explanation of methods 
 - Copy of Hakai Institute Metadata Form - Research Catalogue and Data Packaging Guide
-- seagrass_fish_survey.csv containing fish survey data from 2016-2021
-- seagrass_inverts_survey.csv containing inverts survey data from 2016-2021
+- seagrass_fish_survey.csv containing fish survey data from 2019-2021
+- seagrass_inverts_survey.csv containing inverts survey data from 2019-2021

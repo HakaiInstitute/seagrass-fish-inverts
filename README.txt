@@ -1,4 +1,4 @@
-Hakai Institute Nearshore Program - Seagrass Fish & Macroinvertebrate Diversity and Abundance v1.0.0
+Hakai Institute Nearshore Program - Seagrass Fish & Macroinvertebrate Diversity and Abundance v1.0.1
 
 This data package is a component of the Hakai Institute’s Nearshore research and monitoring program, designed to quantify change in seagrass ecosystems. The overarching objective of Hakai Nearshore research is to investigate the role of habitats and their associated communities, in the face of stress and disturbances from global climate change and local coastal perturbations.
 
