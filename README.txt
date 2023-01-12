@@ -1,5 +1,4 @@
-Hakai Institute Nearshore Program - Seagrass Fish & Macroinvertebrate Diversity and Abundance v1.0.1
-
+Hakai Institute Nearshore Program - Seagrass Fish & Macroinvertebrate Diversity and Abundance v1.1.0
 This data package is a component of the Hakai Institute’s Nearshore research and monitoring program, designed to quantify change in seagrass ecosystems. The overarching objective of Hakai Nearshore research is to investigate the role of habitats and their associated communities, in the face of stress and disturbances from global climate change and local coastal perturbations.
 
 This data package is licensed under a Creative Commons Attribution 4.0 International License (CC-BY). For more information, see LICENCE.txt. Creating data packages requires many scientists and data managers involved with science coordination, data aggregation, quality control, and data management. In light of the effort required to create data packages, we request that in addition to following the CC-BY license terms, that users 1) respect the data providers, and provide helpful feedback on data quality, and 2) communicate and/or collaborate with Hakai Nearshore researchers if you are considering using this dataset for manuscripts or other forms of reporting.
