@@ -41,6 +41,7 @@ inverts <- read.csv("./raw-data/seagrass_inverts.csv")
 events <- read.csv("./raw-data/seagrass_events.csv")
 names <- read.csv("./raw-data/seagrass_names.csv")
 namestofix <- read.csv("./raw-data/seagrass_namestofix.csv")
+sites <- read.csv("./raw-data/seagrass_sites.csv")
 ```
 
 Tidy column names
@@ -530,6 +531,33 @@ inverts <- subset(inverts, select = -(transect))
 
 #remove temporary data frame
 remove(invertsabunds)
+```
+
+#### Join site metadata
+
+Tidy up column and site names
+```{r}
+sites <- rename_with(sites, tolower)
+colnames(sites) <- gsub("\\.", "_", colnames(sites))
+sites <- subset(sites, project_name == "Seagrass" & gps_level == "transect")
+
+sites$site_name <- toupper(sites$site_name)
+sites$site_name <- gsub(" ", "_", sites$site_name)
+sites$site_name <- gsub("\\.", "_", sites$site_name)
+sites$site_name <- gsub("GOOSE_SE", "GOOSE_SOUTHEAST", sites$site_name)
+sites$site_name <- gsub("GOOSE_SW", "GOOSE_SOUTHWEST", sites$site_name)
+
+sites$point_name <- gsub(".*_", "", sites$point_name)
+sites$point_name <- gsub("E", "EDGE", sites$point_name)
+sites$point_name <- gsub("I", "INTERIOR", sites$point_name)
+sites$point_name <- paste(sites$site_name, sites$point_name, sep = "_")
+```
+
+Join site metadata onto data sets
+```{r}
+fish <- left_join(fish, (select(sites, "point_name", "substrate", "decimal_lat", "decimal_long", "end_transect_decimal_lat", "end_transect_decimal_lon")), by = c("site_id" = "point_name"))
+
+inverts <- left_join(inverts, (select(sites, "point_name", "substrate", "decimal_lat", "decimal_long", "end_transect_decimal_lat", "end_transect_decimal_lon")), by = c("site_id" = "point_name"))
 ```
 
 ***
