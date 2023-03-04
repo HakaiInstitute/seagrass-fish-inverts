@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Copy of Hakai Institute Metadata Form - Research Catalogue and Data Packaging Guide
 - seagrass_fish_survey.csv containing fish survey data from 2019-2022
 - seagrass_inverts_survey.csv containing inverts survey data from 2019-2022
+- sites.csv for site metadata
 
 ## [v1.0.0] - 2022-06-23
 ### Notes ###
