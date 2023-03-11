@@ -1,23 +1,28 @@
 ---
 title: "Seagrass Fish and Inverts"
 author: "ZL Monteith & F Manning"
-date: '2020-07-10'
-output: html_document
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide 
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Seagrass Fish and Inverts Data Package
+## Seagrass Fish and Inverts Data Package
 
-## Purpose
-This script serves to collect, aggregate, and QC fish and macroinvertebrate
-survey data from the Hakai Nearshore Seagrass project.
+This script loads, cleans, and combines the datasets required for the Hakai Nearshore: Seagrass Fish and Macroinvertebrate data package. All of these data are stored on the Hakai EIMS Data Portal. 
+
+**Notes for adding data:** When adding a new year's worth of survey data, *do not replace the existing raw data files* in this data package with downloads for all years from the EIMS portal; rather, download *only* the new year's raw data and *append* that to the existing raw data files. This is important because the existing raw data files have undergone a post-portal download QC and ongoing changes to the portal can/have created issues for those older years. The same thing should be done for retroactively adding missing data from previous years.
+
+Bottom line: *always add to the existing raw data file rather than replace the whole file.*
+
 
 ***
 
-## Setup
+### Setup
 
 Clear work space prior to starting
 ```{r}
@@ -33,6 +38,9 @@ lapply(c("tidyverse",
        library,
        character.only = TRUE)
 ```
+***
+
+### Load and tidy data
 
 Load data
 ```{r}
@@ -60,13 +68,8 @@ names(inverts)[names(inverts) == "transect_dist__m_"] <- "transect_dist_m"
 names(inverts)[names(inverts) == "size__cm_"] <- "size_cm"
 ```
 
-***
 
-## Data Cleaning
-
-### Portal issues fix (these may be removed once the issues are resolved)
-
-Portal issues caused some rows to be added instead of updated (Hakai IDs should not appear more than once), so remove duplicate/extra rows
+Portal issues caused some rows to be added instead of updated (Hakai IDs should not appear more than once), so remove duplicate/extra rows (issues resolved on portal--removed fix, but keeping code in case it crops up again)
 ```{r}
 # fish <- fish %>% distinct() %>% filter(action == "")
 #  
@@ -78,13 +81,20 @@ Portal issues caused some rows to be added instead of updated (Hakai IDs should 
 # as.data.frame()
 ```
 
-Collected_start/end times for 2016 are appearing as 2012, so correct that
+Collected_start/end times for 2016 fish are appearing as 2012, so correct that
 ```{r}
 fish$collected_start <- gsub("2012", "2016", fish$collected_start)
 fish$collected_end <- gsub("2012", "2016", fish$collected_end)
 ```
 
 ### Fixing names
+
+**NOTE:** 
+
+New divers, tenders, tender combos, or fish/invert species may require the list of accepted names (seagrass_names.csv) to be updated. 
+
+New typos/misspellings may require the list of name corrections (seagrass_namestofix.csv) to be updated.  
+
 
 #### Fixing names: Species 
 
@@ -95,13 +105,13 @@ fish <- FindReplace(fish, "species", namestofix, from = "fish_name", to = "fish_
 inverts <- FindReplace(inverts, "species", namestofix, from = "inverts_name", to = "inverts_replace", exact = TRUE, vector = FALSE)
 ```
 
-Use this code to check for anything that didn't work; update "namestofix.csv" and rerun if needed
+Use this code to check for anything that didn't work; if needed, update "seagrass_names.csv" and/or "seagrass_namestofix.csv" and rerun
 ```{r}
-# import list of acceptable fish names
+# import list of accepted fish names
 fishnames_good <- names$fish %>% data.frame
 colnames(fishnames_good) <- "name"
 
-# import list of acceptable inverts names
+# import list of accepted inverts names
 invertsnames_good <- names$inverts %>% data.frame
 colnames(invertsnames_good) <- "name"
 
@@ -137,7 +147,7 @@ fish <- FindReplace(fish, "surveyor", namestofix, from = "divers_name", to = "di
 inverts <- FindReplace(inverts, "surveyor", namestofix, from = "divers_name", to = "divers_replace", exact = TRUE, vector = FALSE)
 ```
 
-Use this code to check for anything that didn't work; update "namestofix.csv" and rerun if needed
+Use this code to check for anything that didn't work; if needed, update "seagrass_names.csv" and/or "seagrass_namestofix.csv" and rerun
 ```{r}
 # import list of acceptable surveyor names
 diversnames_good <- names$divers %>% data.frame
@@ -169,7 +179,7 @@ fish <- FindReplace(fish, "dive_supervisor", namestofix, from = "techs_name", to
 inverts <- FindReplace(inverts, "dive_supervisor", namestofix, from = "techs_name", to = "techs_replace", exact = TRUE, vector = FALSE)
 ```
 
-Use this code to check for anything that didn't work; update "namestofix.csv" and rerun if needed
+Use this code to check for anything that didn't work; if needed, update "seagrass_names.csv" and/or "seagrass_namestofix.csv" and rerun
 ```{r}
 # import list of acceptable surveyor names
 techsnames_good <- names$techs %>% data.frame
@@ -210,13 +220,9 @@ inverts <- inverts %>% mutate_all(na_if,"") %>% discard(~all(is.na(.)))
 ## Data Quality Check
 
 ### Cross Reference Events
-In order to ensure completeness of the fish and invertebrate data sets (i.e. all
-site visits are included), the data will be aggregated to the event level, and
-then cross referenced with the events data also loaded from the EIMS Portal. If
-all data are present, the fish and invertebrate events should match the Events
-table.
+In order to ensure completeness of the fish and invertebrate data sets (i.e. all site visits are included), the data will be aggregated to the event level, and then cross referenced with the events data also loaded from the EIMS Portal. If all data are present, the fish and invertebrate events should match the Events table.
 
-For each event (i.e.. transect - site_id - level visit), there should be two
+For each event (i.e. transect - site_id - level visit), there should be two
 fish surveys, and two invertebrate surveys. 
 
 ```{r event-qc}
@@ -338,20 +344,21 @@ write.csv(inverts_events_to_QC, "./output/inverts_events_to_QC.csv")
 remove(list = c("events_count", "fish_1survey_missing", "fish_2surveys_missing", "fish_events", "fish_events_check", "fish_too_many_surveys", "inverts_1survey_missing", "inverts_2surveys_missing", "inverts_events", "inverts_events_check", "inverts_too_many_surveys"))
 ```
 
-### Mmore miscellaneous fixes 
+### More miscellaneous fixes 
 
-Check for discrepancies between date and collected_start/end (collected_start/end typically contain the correct date, but important to check for entering mistakes). 
+Check for discrepancies between date and collected_start/end (collected_start/end typically contain the correct date, but check for entering mistakes). 
+
 Since some event dates are incorrect, replace "date" with collected_start/end date here:
 ```{r}
 fish$datecheck <- as.Date(fish$collected_start) %>% as.character()
-fishdatecheck <- fish %>% filter(date != datecheck)
-fish$date <- fish$datecheck # 2019-2022 confirmed that collected_start/end contain correct dates, still need to check other dates
+fishdatecheck <- fish %>% filter(date != datecheck) # 2019-2022 confirmed that collected_start/end contain correct dates, still need to check other dates
+fish$date <- ifelse(fish$date != fish$datecheck, fish$datecheck, fish$date) 
 fish <- subset(fish, select = -datecheck)
 remove(fishdatecheck)
 
 inverts$datecheck <- as.Date(inverts$collected_start) %>% as.character()
-invertsdatecheck <- inverts %>% filter(date != datecheck)
-inverts$date <- inverts$datecheck # 2019-2021 confirmed that collected_start/end contain correct dates, still need to check other dates
+invertsdatecheck <- inverts %>% filter(date != datecheck) # 2019-2021 confirmed that collected_start/end contain correct dates, still need to check other dates
+inverts$date <- ifelse(inverts$date != inverts$datecheck, inverts$datecheck, inverts$date)
 inverts <- subset(inverts, select = -datecheck)
 remove(invertsdatecheck)
 ```
