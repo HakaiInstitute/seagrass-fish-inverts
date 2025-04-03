@@ -15,4 +15,4 @@ For details on the quality checks and assurance done on these data, see the Data
 
 For a complete list of Hakai seagrass data packages, please refer to the Nearshore Seagrass Overview document: https://docs.google.com/document/d/1c4d7ZtkNbbsFT1RkSgELt5nFV6OahEsHxLA2vZI153I/edit?usp=sharing
 
-For questions, please contact faye.manning@hakai.org, zach.monteith@hakai.org, or nearshore@hakai.org. 
+For questions, please contact zach.monteith@hakai.org and nearshore@hakai.org. 
