@@ -3,6 +3,10 @@ All notable data quality control measures will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v1.1.1] - 2025-04-07
+### Notes ###
+- Correct QC errors flagged in inverts_events_QC. Blanks occurred for surveyors and these were filled. Data on portal was correct and complete, and thus cross-checked there.
+
 ## [v1.1.0] - 2023-01-12
 ### Notes ###
 - Added 2022 data to existing dataset
