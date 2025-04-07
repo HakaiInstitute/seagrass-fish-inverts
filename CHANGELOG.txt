@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
+## [v1.1.1] - 2025-04-07
+### Notes ###
+- Name of data package has been updated from Seagrass Fish & Macroinvertebrate Diversity and Abundance - Central Coast, BC to Seagrass fish and macroinvertebrate swath data BC Central Coast for consistency with other subtidal Nearshore data packages. All files mentioning the data package name have been updated.
+
 ## [v1.1.0] - 2023-01-12
 ### Notes ###
 - This is the second release of the Seagrass Fish & Macroinvertebrate Diversity and Abundance dataset, currently containing data from 2019 to 2022. 
